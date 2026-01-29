@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>献立マネージャー Pro V43</title>
+    <title>献立マネージャー Pro V44</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
@@ -37,8 +37,6 @@
         input:checked + .slider { background: var(--md-primary); }
         input:checked + .slider:before { transform: translateX(22px); }
         .mode-label { font-size: 0.75rem; color: #666; margin-right: 8px; }
-        /* ONの時の文字色強調 */
-        input:checked ~ .mode-label-text { color: var(--md-primary); }
 
         table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #ddd; table-layout: fixed; }
         tr.day-row { border-bottom: 4px solid #ccc; }
@@ -72,7 +70,7 @@
         </div>
         <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
         <input type="text" id="profileName" placeholder="新規保存名">
-        <button onclick="saveProfile()" style="background:#006495">現在の設定を保存</button>
+        <button onclick="saveProfile()" style="background:#006495">保存</button>
         <div class="btn-row">
             <button onclick="exportCSV()" style="background:#455a64; font-size:0.8rem;">CSV出力</button>
             <button onclick="document.getElementById('csvInput').click()" style="background:#455a64; font-size:0.8rem;">CSV入力</button>
@@ -82,16 +80,16 @@
 
     <div class="card">
         <h2>料理の登録</h2>
-        <div class="btn-row" style="margin-top:0; margin-bottom:12px;">
+        <div class="btn-row" style="margin:0 0 12px 0;">
             <input type="text" id="addName" placeholder="料理名">
             <input type="text" id="addIng" placeholder="材料">
         </div>
-        <div class="btn-row" style="margin-top:0; margin-bottom:12px;">
-            <button onclick="addDish('main')">主菜へ追加</button>
-            <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜へ追加</button>
+        <div class="btn-row" style="margin:0 0 12px 0;">
+            <button onclick="addDish('main')">主菜追加</button>
+            <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜追加</button>
         </div>
-        <label>主菜リスト</label><div id="mainListDisplay" class="scroll-list"></div>
-        <label>副菜リスト</label><div id="sideListDisplay" class="scroll-list"></div>
+        <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
+        <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
     </div>
 
     <div class="card">
@@ -111,8 +109,8 @@
                 <label class="switch"><input type="checkbox" id="side2BatchMode" checked onchange="updateModeLabel('side2')"><span class="slider"></span></label>
             </div>
         </div>
-        <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
-        <label>⭐ 食べたい料理</label><select id="wantToEatSelect" multiple></select>
+        <label>❌ 除去</label><select id="excludeSelect" multiple></select>
+        <label>⭐ 優先</label><select id="wantToEatSelect" multiple></select>
         <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">献立を自動作成</button>
     </div>
 
@@ -136,8 +134,8 @@
     </div>
 
     <script>
-        const STORAGE_KEY_DATA = 'Kondate_V43_Data';
-        const STORAGE_KEY_PROFILES = 'Kondate_V43_Profiles';
+        const STORAGE_KEY_DATA = 'Kondate_V44_Data';
+        const STORAGE_KEY_PROFILES = 'Kondate_V44_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
@@ -167,7 +165,8 @@
 
         function updateModeLabel(key) {
             const isBatch = document.getElementById(key + 'BatchMode').checked;
-            document.getElementById(key + 'ModeLabel').innerText = isBatch ? "3日分作り置きON" : "3日分作り置きOFF";
+            const labelText = isBatch ? "3日分作り置きON" : "3日分作り置きOFF";
+            document.getElementById(key + 'ModeLabel').innerText = labelText;
             document.getElementById(key + 'ModeLabel').style.color = isBatch ? "var(--md-primary)" : "#666";
         }
 
@@ -265,6 +264,7 @@
             const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
             const prio = document.getElementById('priorityMode').checked;
 
+            // 主菜
             let mPool = shuffle([...data.mains]).filter(d => !exc.includes(d.name));
             let usedMains = data.currentPlan.filter(p => p.mainFixed && p.main).map(p => p.main);
             DAYS.forEach((_, i) => {
@@ -275,19 +275,26 @@
                 }
             });
 
+            // 副菜1 & 2
             ['side1', 'side2'].forEach(sideKey => {
                 const isBatch = document.getElementById(sideKey + 'BatchMode').checked;
                 let sPool = shuffle([...data.sides]).filter(d => !exc.includes(d.name));
                 let currentBatch = "";
+                let usedThisWeek = data.currentPlan.filter(p => p[sideKey + 'Fixed'] && p[sideKey]).map(p => p[sideKey]);
+                
                 DAYS.forEach((_, i) => {
                     if (isBatch) {
+                        // 3日作り置きON
                         if (i % 3 === 0) {
                             currentBatch = data.currentPlan[i][sideKey + 'Fixed'] ? data.currentPlan[i][sideKey] : pickDish(sPool, want, inv, prio).name;
                         }
                         if (!data.currentPlan[i][sideKey + 'Fixed']) data.currentPlan[i][sideKey] = currentBatch;
                     } else {
+                        // 3日作り置きOFF (毎日違う料理)
                         if (!data.currentPlan[i][sideKey + 'Fixed']) {
-                            data.currentPlan[i][sideKey] = pickDish(sPool, want, inv, prio).name;
+                            const d = pickDish(sPool.filter(item => !usedThisWeek.includes(item.name)), want, inv, prio);
+                            data.currentPlan[i][sideKey] = d.name;
+                            if(d.name) usedThisWeek.push(d.name);
                         }
                     }
                 });
@@ -348,8 +355,8 @@
 
         function deleteProfile() {
             const n = document.getElementById('profileSelect').value;
-            if (n === SAMPLE_KEY) return alert("サンプルは削除できません");
-            if (confirm(n + " を削除しますか？")) { 
+            if (n === SAMPLE_KEY) return alert("サンプルは削除不可");
+            if (confirm(n + " 削除しますか？")) { 
                 delete profiles[n]; 
                 localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); 
                 updateProfileSelect(); 
