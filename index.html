@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>献立マネージャー Pro V42</title>
+    <title>献立マネージャー Pro V43</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
@@ -28,7 +28,7 @@
         .dish-ing-edit { font-size: 0.75rem; color: #666; }
         
         .switch-group { background: #f9f9f9; padding: 10px; border-radius: 16px; margin: 10px 0; border: 1px solid #eee; }
-        .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-weight: bold; border-bottom: 1px solid #eee; }
+        .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-weight: bold; border-bottom: 1px solid #eee; }
         .switch-container:last-child { border-bottom: none; }
         .switch { position: relative; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -36,7 +36,10 @@
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background: var(--md-primary); }
         input:checked + .slider:before { transform: translateX(22px); }
-        .mode-label { font-size: 0.75rem; color: #666; margin-right: 8px; }
+        
+        .mode-status { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
+        .status-on { color: var(--md-primary); background: #e8f5e9; }
+        .status-off { color: #888; background: #eee; }
 
         table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #ddd; table-layout: fixed; }
         tr.day-row { border-bottom: 4px solid #ccc; }
@@ -70,7 +73,7 @@
         </div>
         <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
         <input type="text" id="profileName" placeholder="新規保存名">
-        <button onclick="saveProfile()" style="background:#006495">保存</button>
+        <button onclick="saveProfile()" style="background:#006495">現在の設定を保存</button>
         <div class="btn-row">
             <button onclick="exportCSV()" style="background:#455a64; font-size:0.8rem;">CSV出力</button>
             <button onclick="document.getElementById('csvInput').click()" style="background:#455a64; font-size:0.8rem;">CSV入力</button>
@@ -85,32 +88,34 @@
             <input type="text" id="addIng" placeholder="材料">
         </div>
         <div class="btn-row" style="margin:0 0 12px 0;">
-            <button onclick="addDish('main')">主菜追加</button>
-            <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜追加</button>
+            <button onclick="addDish('main')">主菜へ追加</button>
+            <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜へ追加</button>
         </div>
-        <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
-        <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
+        <label>主菜リスト</label><div id="mainListDisplay" class="scroll-list"></div>
+        <label>副菜リスト</label><div id="sideListDisplay" class="scroll-list"></div>
     </div>
 
     <div class="card">
         <h2>作成条件</h2>
         <label>🏠 在庫にある食材</label><select id="inventorySelect" multiple></select>
+        
         <div class="switch-group">
             <div class="switch-container">
                 <span>在庫食材を優先活用</span>
                 <label class="switch"><input type="checkbox" id="priorityMode" checked><span class="slider"></span></label>
             </div>
             <div class="switch-container">
-                <span>副菜1: <span class="mode-label" id="side1ModeLabel">3日一括</span></span>
+                <span>副菜1: <span id="side1ModeLabel" class="mode-status"></span></span>
                 <label class="switch"><input type="checkbox" id="side1BatchMode" checked onchange="updateModeLabel('side1')"><span class="slider"></span></label>
             </div>
             <div class="switch-container">
-                <span>副菜2: <span class="mode-label" id="side2ModeLabel">3日一括</span></span>
+                <span>副菜2: <span id="side2ModeLabel" class="mode-status"></span></span>
                 <label class="switch"><input type="checkbox" id="side2BatchMode" checked onchange="updateModeLabel('side2')"><span class="slider"></span></label>
             </div>
         </div>
-        <label>❌ 除去</label><select id="excludeSelect" multiple></select>
-        <label>⭐ 優先</label><select id="wantToEatSelect" multiple></select>
+
+        <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
+        <label>⭐ 優先的に食べたい</label><select id="wantToEatSelect" multiple></select>
         <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">献立を自動作成</button>
     </div>
 
@@ -134,8 +139,8 @@
     </div>
 
     <script>
-        const STORAGE_KEY_DATA = 'Kondate_V42_Data';
-        const STORAGE_KEY_PROFILES = 'Kondate_V42_Profiles';
+        const STORAGE_KEY_DATA = 'Kondate_V43_Data';
+        const STORAGE_KEY_PROFILES = 'Kondate_V43_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
@@ -165,7 +170,14 @@
 
         function updateModeLabel(key) {
             const isBatch = document.getElementById(key + 'BatchMode').checked;
-            document.getElementById(key + 'ModeLabel').innerText = isBatch ? "3日一括" : "毎日";
+            const labelEl = document.getElementById(key + 'ModeLabel');
+            if (isBatch) {
+                labelEl.innerText = "3日分作り置きON";
+                labelEl.className = "mode-status status-on";
+            } else {
+                labelEl.innerText = "3日分作り置きOFF";
+                labelEl.className = "mode-status status-off";
+            }
         }
 
         function renderAll() {
@@ -262,7 +274,6 @@
             const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
             const prio = document.getElementById('priorityMode').checked;
 
-            // 主菜
             let mPool = shuffle([...data.mains]).filter(d => !exc.includes(d.name));
             let usedMains = data.currentPlan.filter(p => p.mainFixed && p.main).map(p => p.main);
             DAYS.forEach((_, i) => {
@@ -273,7 +284,6 @@
                 }
             });
 
-            // 副菜1 & 2
             ['side1', 'side2'].forEach(sideKey => {
                 const isBatch = document.getElementById(sideKey + 'BatchMode').checked;
                 let sPool = shuffle([...data.sides]).filter(d => !exc.includes(d.name));
@@ -281,17 +291,14 @@
                 
                 DAYS.forEach((_, i) => {
                     if (isBatch) {
-                        // 3日一括モード
                         if (i % 3 === 0) {
                             currentBatch = data.currentPlan[i][sideKey + 'Fixed'] ? data.currentPlan[i][sideKey] : pickDish(sPool, want, inv, prio).name;
                         }
                         if (!data.currentPlan[i][sideKey + 'Fixed']) data.currentPlan[i][sideKey] = currentBatch;
                     } else {
-                        // 毎日変更モード
                         if (!data.currentPlan[i][sideKey + 'Fixed']) {
                             const d = pickDish(sPool, want, inv, prio);
                             data.currentPlan[i][sideKey] = d.name;
-                            // 1週間の中でなるべく被らないようにプールから除く
                             sPool = sPool.filter(item => item.name !== d.name);
                             if(sPool.length === 0) sPool = shuffle([...data.sides]);
                         }
@@ -342,26 +349,20 @@
             if (n && n !== SAMPLE_KEY) { 
                 profiles[n] = JSON.parse(JSON.stringify(data)); 
                 localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); 
-                updateProfileSelect(); alert("保存しました"); 
+                updateProfileSelect(); alert("保存完了"); 
             }
         }
 
         function loadProfile() {
             const n = document.getElementById('profileSelect').value;
             data = JSON.parse(JSON.stringify(profiles[n] || MASTER_SAMPLE));
-            data.currentPlan.forEach(p => {
-                if(!p.side1) p.side1 = p.side || "";
-                if(!p.side1Fixed) p.side1Fixed = p.sideFixed || false;
-                if(!p.hasOwnProperty('side2')) p.side2 = "";
-                if(!p.hasOwnProperty('side2Fixed')) p.side2Fixed = false;
-            });
             renderAll(); renderTable();
         }
 
         function deleteProfile() {
             const n = document.getElementById('profileSelect').value;
-            if (n === SAMPLE_KEY) return alert("サンプルは削除できません");
-            if (confirm(n + " 削除？")) { 
+            if (n === SAMPLE_KEY) return alert("サンプルは削除不可");
+            if (confirm(n + " 削除しますか？")) { 
                 delete profiles[n]; 
                 localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); 
                 updateProfileSelect(); 
@@ -424,12 +425,3 @@
             } else if (id === 'shoppingListBody') {
                 txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => li.innerText.replace(' 在庫あり', '')).join('\n');
             }
-            navigator.clipboard.writeText(txt).then(() => alert("コピー完了"));
-        }
-
-        function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
-
-        init();
-    </script>
-</body>
-</html>
