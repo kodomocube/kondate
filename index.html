@@ -15,6 +15,11 @@
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         body { font-family: sans-serif; background: var(--md-surface); color: #1a1c19; margin: 0; padding: 12px; padding-bottom: 60px; font-size: 14px; }
+        
+        /* ヘッダー画像用スタイル */
+        .header-img-container { text-align: center; margin: 10px 0; }
+        .header-img { width: 100%; max-width: 320px; border-radius: 16px; box-shadow: var(--shadow); }
+
         .card { background: #fff; padding: 16px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
         h2 { font-size: 1rem; color: var(--md-primary); margin: 0 0 12px 0; border-left: 5px solid var(--md-primary); padding-left: 8px; }
         input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
@@ -58,6 +63,10 @@
     </style>
 </head>
 <body>
+
+    <div class="header-img-container">
+        <img src="1000027302.jpg" alt="Kodomo Cube" class="header-img">
+    </div>
 
     <h1 style="text-align:center; color:var(--md-primary); font-size:1.4rem; margin:10px 0;">🍴 献立＆買い物リストメーカー</h1>
 
@@ -134,8 +143,8 @@
     </div>
 
     <script>
-        const STORAGE_KEY_DATA = 'Kondate_V46_Data';
-        const STORAGE_KEY_PROFILES = 'Kondate_V46_Profiles';
+        const STORAGE_KEY_DATA = 'Kondate_V47_Data';
+        const STORAGE_KEY_PROFILES = 'Kondate_V47_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
@@ -284,13 +293,11 @@
                 
                 DAYS.forEach((_, i) => {
                     if (isBatch) {
-                        // 3日作り置きON
                         if (i % 3 === 0) {
                             currentBatch = data.currentPlan[i][sideKey + 'Fixed'] ? data.currentPlan[i][sideKey] : pickDish(sPool, want, inv, prio).name;
                         }
                         if (!data.currentPlan[i][sideKey + 'Fixed']) data.currentPlan[i][sideKey] = currentBatch;
                     } else {
-                        // 3日作り置きOFF (毎日違う料理)
                         if (!data.currentPlan[i][sideKey + 'Fixed']) {
                             const d = pickDish(sPool.filter(item => !usedThisWeek.includes(item.name)), want, inv, prio);
                             data.currentPlan[i][sideKey] = d.name;
