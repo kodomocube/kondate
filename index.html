@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>献立マネージャー Pro V44</title>
+    <title>献立＆買い物リストメーカー</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
@@ -59,7 +59,7 @@
 </head>
 <body>
 
-    <h1 style="text-align:center; color:var(--md-primary); font-size:1.4rem; margin:10px 0;">🍴 献立マネージャー Pro</h1>
+    <h1 style="text-align:center; color:var(--md-primary); font-size:1.4rem; margin:10px 0;">🍴 献立＆買い物リストメーカー</h1>
 
     <div class="card">
         <h2>データの管理</h2>
@@ -109,8 +109,8 @@
                 <label class="switch"><input type="checkbox" id="side2BatchMode" checked onchange="updateModeLabel('side2')"><span class="slider"></span></label>
             </div>
         </div>
-        <label>❌ 除去</label><select id="excludeSelect" multiple></select>
-        <label>⭐ 優先</label><select id="wantToEatSelect" multiple></select>
+        <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
+        <label>⭐ 食べたい料理</label><select id="wantToEatSelect" multiple></select>
         <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">献立を自動作成</button>
     </div>
 
@@ -134,8 +134,8 @@
     </div>
 
     <script>
-        const STORAGE_KEY_DATA = 'Kondate_V44_Data';
-        const STORAGE_KEY_PROFILES = 'Kondate_V44_Profiles';
+        const STORAGE_KEY_DATA = 'Kondate_V46_Data';
+        const STORAGE_KEY_PROFILES = 'Kondate_V46_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
