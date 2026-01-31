@@ -99,6 +99,9 @@
         .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
         
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
+        .batch-action-btn { font-size: 0.7rem; padding: 8px 10px; border-radius: 100px; width: 100%; font-weight: bold; color: white; cursor: pointer; margin-bottom: 0; }
+        .btn-salad-action { background: linear-gradient(#c5e1a5, #8bc34a); }
+        .btn-soup-action { background: linear-gradient(#ce93d8, #9c27b0); }
         
         .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
         .order-on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
@@ -181,7 +184,11 @@
     <div class="card glossy-card compact-mode" id="planCard">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h2 style="margin:0;">📅 今週の献立</h2>
-            <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示</button>
+            <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示にする</button>
+        </div>
+        <div class="btn-row" style="margin-bottom:12px;">
+            <button class="batch-action-btn btn-salad-action" id="batchSaladBtn" onclick="toggleBatchClear('salad')">一括でサラダをなしにする</button>
+            <button class="batch-action-btn btn-soup-action" id="batchSoupBtn" onclick="toggleBatchClear('soup')">一括でスープをなしにする</button>
         </div>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
@@ -278,6 +285,7 @@
             renderAll();
             renderTable();
             updateModeLabel('side');
+            updateBatchBtnLabels();
         }
 
         async function syncSampleFromGitHubCSV() {
@@ -308,8 +316,37 @@
             const card = document.getElementById('planCard');
             const isNowCompact = card.classList.toggle('compact-mode');
             const btn = document.querySelector('.toggle-compact-btn');
-            btn.innerText = isNowCompact ? "詳細表示" : "コンパクト表示";
+            btn.innerText = isNowCompact ? "詳細表示にする" : "コンパクト表示にする";
             renderTable();
+        }
+
+        function toggleBatchClear(type) {
+            const allLocked = data.currentPlan.every(p => p[type + 'Fixed']);
+            const typeJP = type === 'salad' ? 'サラダ' : 'スープ';
+            
+            if (allLocked) {
+                // ロック解除
+                data.currentPlan.forEach(p => p[type + 'Fixed'] = false);
+            } else {
+                // なしにしてロック
+                data.currentPlan.forEach(p => {
+                    p[type] = "";
+                    p[type + 'Fixed'] = true;
+                });
+            }
+            updateBatchBtnLabels();
+            renderTable();
+            saveToLocal();
+        }
+
+        function updateBatchBtnLabels() {
+            const sBtn = document.getElementById('batchSaladBtn');
+            const pBtn = document.getElementById('batchSoupBtn');
+            const sLocked = data.currentPlan.every(p => p.saladFixed);
+            const pLocked = data.currentPlan.every(p => p.soupFixed);
+            
+            sBtn.innerText = sLocked ? "一括でサラダのロック解除する" : "一括でサラダをなしにする";
+            pBtn.innerText = pLocked ? "一括でスープのロック解除する" : "一括でスープをなしにする";
         }
 
         function updateModeLabel(key) {
@@ -402,7 +439,7 @@
             </div>`;
         }
 
-        function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
+        function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; updateBatchBtnLabels(); renderTable(); saveToLocal(); }
         function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
 
         function openDishPicker(dayIdx, type) {
@@ -477,7 +514,7 @@
         }
 
         function saveProfile() { const n = document.getElementById('profileName').value.trim(); if (n && n !== SAMPLE_KEY) { profiles[n] = JSON.parse(JSON.stringify(data)); localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); alert("保存しました"); } }
-        function loadProfile() { const n = document.getElementById('profileSelect').value; data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) })); renderAll(); renderTable(); }
+        function loadProfile() { const n = document.getElementById('profileSelect').value; data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) })); renderAll(); renderTable(); updateBatchBtnLabels(); }
         function deleteProfile() { const n = document.getElementById('profileSelect').value; if (n === SAMPLE_KEY) return alert("サンプルは削除不可"); if (confirm(n + " 削除しますか？")) { delete profiles[n]; localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); } }
         function exportCSV() { let csv = "Type,Name,Ingredients\n"; ['main', 'side', 'salad', 'soup'].forEach(t => data[t+'s'].forEach(d => csv += `${t},"${d.name}","${d.ing.join('/')}"\n`)); const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click(); }
         function importCSV(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const lines = e.target.result.split(/\r?\n/); const newData = { mains:[], sides:[], salads:[], soups:[] }; for (let i = 1; i < lines.length; i++) { const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if (row.length < 3) continue; const t = row[0].trim().toLowerCase() + 's'; const name = row[1].replace(/"/g, '').trim(); const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s); if (newData[t]) newData[t].push({ name, ing }); } if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); } input.value = ""; }; reader.readAsText(file); }
