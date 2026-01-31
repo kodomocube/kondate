@@ -46,7 +46,6 @@
         input:checked + .slider:before { transform: translateX(22px); }
         .mode-label { font-size: 0.75rem; color: #666; margin-right: 8px; }
 
-        /* 献立テーブルデザイン改善 */
         table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #ddd; table-layout: fixed; }
         tr.day-row { border-bottom: 4px solid #ccc; }
         th.day-header { width: 32px; background: #2e7d32; color: white; padding: 8px 2px; text-align: center; border-right: 1px solid #ddd; font-size: 0.9rem; }
@@ -58,7 +57,8 @@
         .label-side { background: var(--md-secondary); }
         .label-salad { background: var(--md-salad); }
         .label-soup { background: var(--md-soup); }
-        .fix-btn { font-size: 0.55rem; padding: 2px 4px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
+        /* 固定ボタンのサイズ調整 */
+        .fix-btn { font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; min-width: 48px; text-align: center; }
         .fix-btn.fixed { background: #333; color: #fff; border-color: #333; }
         .menu-select { flex-grow: 1; padding: 2px; font-size: 0.8rem; font-weight: bold; border: 1px solid #ddd; background: #fff; border-radius: 4px; width: 100%; min-width: 0; }
         .recipe-links-row { display: flex; gap: 4px; margin-top: 2px; }
@@ -121,7 +121,7 @@
         </div>
         <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
         <label>⭐ 食べたい料理</label><select id="wantToEatSelect" multiple></select>
-        <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">献立を自動作成</button>
+        <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">固定していない献立を自動作成</button>
     </div>
 
     <div class="card" id="planCard">
@@ -272,9 +272,9 @@
             <div class="dish-section">
                 <div class="dish-header-row">
                     <span class="dish-type-label ${labelClass}">${label}</span>
-                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固':'定'}</span>
+                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定ON':'固定OFF'}</span>
                     <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
-                        <option value="">未設定</option>
+                        <option value="">なし</option>
                         ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                     </select>
                 </div>
