@@ -96,6 +96,16 @@
         .order-off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
         .btn-reset-list { width: auto; padding: 6px 12px; font-size: 0.75rem; background: linear-gradient(#78909c, #455a64); margin-top: 8px; }
         .order-def { font-size: 0.75rem; color: #555; margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 12px; line-height: 1.5; }
+
+        /* セレクターパネル用スタイル */
+        #dishPickerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
+        #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 80%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .picker-title { font-weight: bold; color: #ff69b4; margin-bottom: 15px; text-align: center; font-size: 1.1rem; }
+        .picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; transition: background 0.2s; word-break: break-all; }
+        .picker-btn:active { background: #ffe0ea; }
+        .picker-btn.none { grid-column: span 2; background: #f5f5f5; color: #888; border-color: #ddd; }
     </style>
 </head>
 <body>
@@ -190,6 +200,14 @@
             <button class="btn-line" onclick="sendToLine()">LINEで送る</button>
         </div>
         <button class="btn-image" onclick="saveAsImage('shoppingListCard', '買い物リスト')">画像保存</button>
+    </div>
+
+    <div id="dishPickerOverlay" onclick="closeDishPicker()">
+        <div id="dishPickerContent" onclick="event.stopPropagation()">
+            <div class="picker-title" id="pickerTitle">料理の変更</div>
+            <div class="picker-grid" id="pickerGrid"></div>
+            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">キャンセル</button>
+        </div>
     </div>
 
     <script>
@@ -334,12 +352,12 @@
                         <th class="day-header">${day}</th>
                         <td class="menu-content">
                             <div class="drop-row">
-                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="editCompactChoice(${i},'main')">${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'main')">主菜なし</span>`}
-                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="editCompactChoice(${i},'side')">${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'side')">副菜なし</span>`}
+                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="openDishPicker(${i},'main')">${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'main')">主菜なし</span>`}
+                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="openDishPicker(${i},'side')">${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'side')">副菜なし</span>`}
                             </div>
                             <div class="drop-row">
-                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="editCompactChoice(${i},'salad')">${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'salad')">サラダなし</span>`}
-                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="editCompactChoice(${i},'soup')">${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'soup')">スープなし</span>`}
+                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="openDishPicker(${i},'salad')">${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'salad')">サラダなし</span>`}
+                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="openDishPicker(${i},'soup')">${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'soup')">スープなし</span>`}
                             </div>
                         </td>
                     </tr>`;
@@ -384,17 +402,25 @@
         function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
         function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
 
-        function editCompactChoice(dayIdx, type) {
-            const list = data[type + 's'];
-            if (list.length === 0) { alert("登録されている料理がありません。"); return; }
-            let message = `${DAYS[dayIdx]}曜日の${type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ'}を選択してください：\n0: なし\n`;
-            list.forEach((d, idx) => { message += `${idx + 1}: ${d.name}\n`; });
-            const result = prompt(message, "");
-            if (result === null) return;
-            const choiceIdx = parseInt(result);
-            if (choiceIdx === 0) { updateChoice(dayIdx, type, ""); }
-            else if (choiceIdx > 0 && choiceIdx <= list.length) { updateChoice(dayIdx, type, list[choiceIdx - 1].name); }
-            else { alert("無効な番号です。"); }
+        /* セレクターパネルのロジック */
+        function openDishPicker(dayIdx, type) {
+            const overlay = document.getElementById('dishPickerOverlay');
+            const grid = document.getElementById('pickerGrid');
+            const title = document.getElementById('pickerTitle');
+            const typeJP = type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ';
+            
+            title.innerText = `${DAYS[dayIdx]}曜日の${typeJP}を選択`;
+            grid.innerHTML = `<div class="picker-btn none" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
+            
+            data[type + 's'].forEach(dish => {
+                grid.innerHTML += `<div class="picker-btn" onclick="updateChoice(${dayIdx},'${type}','${dish.name}'); closeDishPicker();">${dish.name}</div>`;
+            });
+            
+            overlay.style.display = 'flex';
+        }
+
+        function closeDishPicker() {
+            document.getElementById('dishPickerOverlay').style.display = 'none';
         }
 
         function generatePlan() {
