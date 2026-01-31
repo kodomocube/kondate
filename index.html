@@ -20,33 +20,10 @@
         .card { background: #fff; padding: 16px; border-radius: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 16px; border: 2px solid #fff; }
 
         button {
-            position: relative;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 100px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            margin-bottom: 12px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            overflow: hidden;
-            transition: transform 0.1s;
+            position: relative; border: none; padding: 14px 20px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 12px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); overflow: hidden; transition: transform 0.1s;
             box-shadow: 0 6px 0 rgba(0,0,0,0.1), 0 8px 15px rgba(0,0,0,0.1), inset 0 -6px 8px rgba(0,0,0,0.2), inset 0 4px 8px rgba(255,255,255,0.4);
         }
-
-        button::after {
-            content: "";
-            position: absolute;
-            top: 4px;
-            left: 15%;
-            width: 70%;
-            height: 35%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 100px;
-            pointer-events: none;
-        }
-
+        button::after { content: ""; position: absolute; top: 4px; left: 15%; width: 70%; height: 35%; background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%); border-radius: 100px; pointer-events: none; }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.1), inset 0 -3px 5px rgba(0,0,0,0.2), inset 0 4px 8px rgba(255,255,255,0.4); }
 
         .btn-main { background: linear-gradient(#ff9ecd, #ff69b4); }
@@ -59,16 +36,8 @@
         .btn-csv { background: linear-gradient(#b0bec5, #78909c); }
         .btn-image { background: linear-gradient(#ff8aab, #f44336); }
 
-        .glossy-card {
-            background: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%) !important;
-            border: 3px solid #fff !important;
-            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4), inset 0 -5px 15px rgba(255, 255, 255, 0.8) !important;
-            position: relative;
-        }
-        .glossy-card::before {
-            content: ""; position: absolute; top: 6px; left: 15%; width: 70%; height: 12px;
-            background: rgba(255,255,255,0.7); border-radius: 50%; filter: blur(2px); pointer-events: none;
-        }
+        .glossy-card { background: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%) !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4), inset 0 -5px 15px rgba(255, 255, 255, 0.8) !important; position: relative; }
+        .glossy-card::before { content: ""; position: absolute; top: 6px; left: 15%; width: 70%; height: 12px; background: rgba(255,255,255,0.7); border-radius: 50%; filter: blur(2px); pointer-events: none; }
 
         h2 { font-size: 1.1rem; color: #ff69b4; text-shadow: 1px 1px 0 #fff; }
         input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 2px solid #ffe0ea; border-radius: 20px; font-size: 16px; box-sizing: border-box; background: #fff; }
@@ -90,7 +59,6 @@
         .fix-btn.fixed { background: #f06292; color: #fff; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
         
         .menu-select { width: 100% !important; flex: 0 0 100%; margin-top: 4px; padding: 8px; font-size: 0.9rem; border: 1px solid #ffd1dc; border-radius: 10px; color: #880e4f; background: #fff; box-sizing: border-box; }
-        
         .search-link { text-decoration: none; font-size: 0.65rem; background: #fff; padding: 3px 8px; border-radius: 10px; color: #f06292; border: 1px solid #ffc1e3; font-weight: bold; white-space: nowrap; }
 
         #shoppingListBody li { background: #fff; margin-bottom: 8px; padding: 12px; border-radius: 20px; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(255,182,193,0.3); display: flex; align-items: center; justify-content: space-between; color: #d81b60; font-weight: bold; }
@@ -99,43 +67,30 @@
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* ボンボンドロップ（コンパクト）表示用スタイル */
+        /* ボンボンドロップ（コンパクト）専用スタイル */
+        .compact-mode .dish-type-label,
         .compact-mode .menu-select,
         .compact-mode .fix-btn,
         .compact-mode .search-link,
         .compact-mode .ing-text { display: none !important; }
 
-        .compact-mode table { border-spacing: 0 4px; }
-        .compact-mode th.day-header { width: 30px; font-size: 12px; height: auto; padding: 4px 0; }
-        .compact-mode td.menu-content { padding: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+        .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; }
+        .compact-mode th.day-header { width: 25px; font-size: 11px; border-radius: 0; border-bottom: 1px solid rgba(255,255,255,0.3); }
+        .compact-mode td.menu-content { padding: 4px 6px; border-radius: 0; border-bottom: 2px solid #ffe0ea; display: flex; flex-direction: column; gap: 3px; }
+        .compact-mode .day-row:last-child th, .compact-mode .day-row:last-child td { border-bottom: none; }
 
+        .drop-row { display: flex; gap: 4px; width: 100%; }
         .drop-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5);
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            position: relative;
+            display: inline-block; padding: 2px 8px; border-radius: 50px; font-size: 10px; font-weight: bold; color: white;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1), inset 0 -1px 2px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.5);
+            flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative; text-align: center;
         }
-        .drop-badge::after {
-            content: ""; position: absolute; top: 2px; left: 10%; width: 80%; height: 30%;
-            background: rgba(255,255,255,0.3); border-radius: 50px; pointer-events: none;
-        }
+        .drop-badge::after { content: ""; position: absolute; top: 1px; left: 10%; width: 80%; height: 30%; background: rgba(255,255,255,0.3); border-radius: 50px; }
 
         .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
         .compact-mode .dish-header-row { display: contents; }
 
-        .toggle-compact-btn {
-            width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0;
-            background: linear-gradient(#f06292, #e91e63);
-            display: inline-block; vertical-align: middle;
-        }
+        .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -257,10 +212,7 @@
                 const githubProfile = { mains, sides, salads, soups, currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
                 profiles[SAMPLE_KEY] = githubProfile;
                 localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
-                if (data.mains.length === 0) {
-                    data = JSON.parse(JSON.stringify(githubProfile));
-                    saveToLocal();
-                }
+                if (data.mains.length === 0) { data = JSON.parse(JSON.stringify(githubProfile)); saveToLocal(); }
             } catch (e) { console.warn("GitHub CSV sync failed.", e); }
         }
 
@@ -269,6 +221,7 @@
             card.classList.toggle('compact-mode');
             const btn = document.querySelector('.toggle-compact-btn');
             btn.innerText = card.classList.contains('compact-mode') ? "標準表示" : "コンパクト表示";
+            renderTable(); // 表示モードに合わせて再描画
         }
 
         function updateModeLabel(key) {
@@ -286,14 +239,7 @@
         function renderFullList(type) {
             const list = data[type + 's'];
             const container = document.getElementById(type + 'ListDisplay');
-            container.innerHTML = list.map((d, i) => `
-                <div class="list-item">
-                    <div class="edit-area">
-                        <span class="dish-name-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'name',this)">${d.name}</span>
-                        <span class="dish-ing-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'ing',this)">${d.ing.join('、')}</span>
-                    </div>
-                    <span style="color:red; cursor:pointer;" onclick="deleteDish('${type}',${i})">✕</span>
-                </div>`).join('');
+            container.innerHTML = list.map((d, i) => `<div class="list-item"><div class="edit-area"><span class="dish-name-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'name',this)">${d.name}</span><span class="dish-ing-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'ing',this)">${d.ing.join('、')}</span></div><span style="color:red; cursor:pointer;" onclick="deleteDish('${type}',${i})">✕</span></div>`).join('');
         }
 
         function updateDishData(t, i, f, el) {
@@ -321,18 +267,35 @@
         }
 
         function renderTable() {
+            const isCompact = document.getElementById('planCard').classList.contains('compact-mode');
             let html = "";
             DAYS.forEach((day, i) => {
                 const p = data.currentPlan[i];
-                html += `<tr class="day-row">
-                    <th class="day-header">${day}</th>
-                    <td class="menu-content">
-                        ${renderRow(i, 'main', '主', 'label-main')}
-                        ${renderRow(i, 'side', '副', 'label-side')}
-                        ${renderRow(i, 'salad', 'サ', 'label-salad')}
-                        ${renderRow(i, 'soup', '汁', 'label-soup')}
-                    </td>
-                </tr>`;
+                if (isCompact) {
+                    html += `<tr class="day-row">
+                        <th class="day-header">${day}</th>
+                        <td class="menu-content">
+                            <div class="drop-row">
+                                ${p.main ? `<span class="drop-badge" style="background:#f06292">${p.main}</span>` : ''}
+                                ${p.side ? `<span class="drop-badge" style="background:#ffb74d">${p.side}</span>` : ''}
+                            </div>
+                            <div class="drop-row">
+                                ${p.salad ? `<span class="drop-badge" style="background:#aed581">${p.salad}</span>` : ''}
+                                ${p.soup ? `<span class="drop-badge" style="background:#9575cd">${p.soup}</span>` : ''}
+                            </div>
+                        </td>
+                    </tr>`;
+                } else {
+                    html += `<tr class="day-row">
+                        <th class="day-header">${day}</th>
+                        <td class="menu-content">
+                            ${renderRow(i, 'main', '主', 'label-main')}
+                            ${renderRow(i, 'side', '副', 'label-side')}
+                            ${renderRow(i, 'salad', 'サ', 'label-salad')}
+                            ${renderRow(i, 'soup', '汁', 'label-soup')}
+                        </td>
+                    </tr>`;
+                }
             });
             document.getElementById('planBody').innerHTML = html;
             updateShoppingList();
@@ -343,16 +306,7 @@
             const currentName = p[type];
             const isFixed = p[type + 'Fixed'];
             const dish = data[type + 's'].find(d => d.name === currentName) || {name:"", ing:[]};
-            const encodedName = encodeURIComponent(currentName);
-            const rakutenUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodedName}/` : null;
-            const cookpadUrl = currentName ? `https://cookpad.com/search/${encodedName}` : null;
-
-            // クラス名から色の取得（バッジ用）
-            const colorMap = { 'label-main': '#f06292', 'label-side': '#ffb74d', 'label-salad': '#aed581', 'label-soup': '#9575cd' };
-            const badgeColor = colorMap[labelClass] || '#ccc';
-
-            return `
-            <div class="dish-section">
+            return `<div class="dish-section">
                 <div class="dish-header-row">
                     <span class="dish-type-label ${labelClass}">${label}</span>
                     <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定ON':'固定OFF'}</span>
@@ -360,12 +314,10 @@
                         <option value="">なし</option>
                         ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                     </select>
-                    ${currentName ? `<span class="drop-badge" style="background:${badgeColor}">${currentName}</span>` : ''}
                 </div>
-                ${currentName ? `
-                <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;" class="recipe-links">
-                    <a href="${rakutenUrl}" target="_blank" class="search-link">楽天レシピ</a>
-                    <a href="${cookpadUrl}" target="_blank" class="search-link">クックパッド</a>
+                ${currentName ? `<div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;" class="recipe-links">
+                    <a href="https://recipe.rakuten.co.jp/search/${encodeURIComponent(currentName)}/" target="_blank" class="search-link">楽天レシピ</a>
+                    <a href="https://cookpad.com/search/${encodeURIComponent(currentName)}" target="_blank" class="search-link">クックパッド</a>
                 </div>` : ''}
                 <small class="ing-text" style="display:block; margin-top:4px; font-size:0.65rem; color:#9e9e9e;">${dish.ing.join('、')}</small>
             </div>`;
@@ -423,7 +375,6 @@
                     }
                 });
             });
-
             renderTable(); saveToLocal();
         }
 
@@ -435,26 +386,13 @@
             return (f.length ? f : shuffled)[0];
         }
 
-        function shuffle(a) { 
-            for(let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
+        function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
         function updateShoppingList() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
             let ings = new Set();
-            data.currentPlan.forEach(p => {
-                ['main', 'side', 'salad', 'soup'].forEach(t => {
-                    const d = data[t+'s'].find(x => x.name === p[t]);
-                    if(d) d.ing.forEach(ing => ings.add(ing));
-                });
-            });
-            document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => `
-                <li><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}
-                <a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px">🛒</a></div></li>`).join('');
+            data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { const d = data[t+'s'].find(x => x.name === p[t]); if(d) d.ing.forEach(ing => ings.add(ing)); }); });
+            document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => `<li><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px">🛒</a></div></li>`).join('');
         }
 
         function updateProfileSelect() {
@@ -508,10 +446,7 @@
             reader.readAsText(file);
         }
 
-        function clearUnfixed() {
-            data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); });
-            renderTable(); saveToLocal();
-        }
+        function clearUnfixed() { data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); }); renderTable(); saveToLocal(); }
 
         async function saveAsImage(id, name) {
             const card = document.getElementById(id);
@@ -527,15 +462,8 @@
 
         function copyText(id) {
             let txt = "";
-            if (id === 'planBody') {
-                txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n');
-            } else if (id === 'shoppingListBody') {
-                txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => {
-                    let text = li.querySelector('span').innerText;
-                    if(li.querySelector('.batch-tag')) text += ' (在庫あり)';
-                    return text;
-                }).join('\n');
-            }
+            if (id === 'planBody') { txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n'); }
+            else if (id === 'shoppingListBody') { txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => { let text = li.querySelector('span').innerText; if(li.querySelector('.batch-tag')) text += ' (在庫あり)'; return text; }).join('\n'); }
             navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
         }
 
