@@ -19,6 +19,8 @@
         .header-img { width: 100%; max-width: 320px; border-radius: 25px; box-shadow: 0 8px 15px rgba(255, 158, 205, 0.3); }
         .card { background: #fff; padding: 16px; border-radius: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 16px; border: 2px solid #fff; }
 
+        .details-content { padding-top: 15px; }
+
         button {
             position: relative; border: none; padding: 14px 20px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 12px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); overflow: hidden; transition: transform 0.1s;
             box-shadow: 0 6px 0 rgba(0,0,0,0.1), 0 8px 15px rgba(0,0,0,0.1), inset 0 -6px 8px rgba(0,0,0,0.2), inset 0 4px 8px rgba(255,255,255,0.4);
@@ -79,12 +81,12 @@
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
         /* コンパクト表示の時の制御 */
-        .compact-mode#planCard .dish-section { display: none !important; } /* 詳細の枠を消す */
-        .compact-mode#planCard .drop-row { display: flex; margin-bottom: 4px; } /* バッジを表示 */
+        .compact-mode#planCard .dish-section { display: none !important; }
+        .compact-mode#planCard .drop-row { display: flex; margin-bottom: 4px; }
         .compact-mode#planCard .drop-row:last-child { margin-bottom: 0; }
         
         /* 詳細表示の時の制御 */
-        #planCard:not(.compact-mode) .drop-row { display: none !important; } /* バッジを消す */
+        #planCard:not(.compact-mode) .drop-row { display: none !important; }
 
         /* コンパクト表示時のテーブルスタイル */
         .compact-mode#planCard table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
@@ -216,7 +218,7 @@
             <div class="picker-title" id="pickerTitle">料理の変更</div>
             <div id="pickerFixArea"></div>
             <div class="picker-grid" id="pickerGrid"></div>
-            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">キャンセル</button>
+            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">閉じる</button>
         </div>
     </div>
 
