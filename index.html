@@ -7,87 +7,94 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <style>
         :root {
-            --md-primary: #2e7d32;
-            --md-surface: #f0f4ef;
-            --md-secondary: #ef6c00;
-            --md-tertiary: #00796b;
-            --md-salad: #c0ca33;
-            --md-soup: #8d6e63;
-            --md-error: #ba1a1a;
-            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            /* ボンボンドロップ風パレット */
+            --md-primary: #ff9ecd; /* ピーチピンク */
+            --md-surface: #fff5f8;
+            --md-secondary: #ffcc80; /* オレンジグミ */
+            --md-salad: #c5e1a5; /* マスカット */
+            --md-soup: #ce93d8; /* グレープ */
+            --md-error: #ff5252;
+            --shadow-drop: 0 8px 15px rgba(255, 158, 205, 0.2);
+            --glossy: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%);
         }
-        body { font-family: sans-serif; background: var(--md-surface); color: #1a1c19; margin: 0; padding: 12px; padding-bottom: 60px; font-size: 14px; }
+        body { font-family: 'Hiragino Sans', sans-serif; background: var(--md-surface); color: #5d4037; margin: 0; padding: 12px; padding-bottom: 60px; font-size: 14px; }
         .header-img-container { text-align: center; margin: 10px 0; }
-        .header-img { width: 100%; max-width: 320px; border-radius: 16px; box-shadow: var(--shadow); }
-        .card { background: #fff; padding: 16px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
-        h2 { font-size: 1rem; color: var(--md-primary); margin: 0; display: inline; }
-        summary { cursor: pointer; outline: none; display: flex; align-items: center; border-left: 5px solid var(--md-primary); padding-left: 8px; }
-        summary::-webkit-details-marker { display: none; }
-        summary::after { content: ' ▼'; font-size: 0.7rem; color: #999; margin-left: auto; }
-        details[open] summary::after { content: ' ▲'; }
-        .details-content { margin-top: 12px; }
-        input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
-        select[multiple] { height: 100px; }
-        label { display: block; margin: 8px 0 4px 4px; font-weight: bold; color: #555; font-size: 0.85rem; }
-        button { background: var(--md-primary); color: white; border: none; padding: 14px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 8px; }
-        .scroll-list { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 12px; padding: 8px; background: #fafafa; margin-bottom: 12px; }
-        .list-item { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 4px solid var(--md-primary); }
-        .edit-area { flex-grow: 1; overflow: hidden; }
-        .dish-name-edit { font-weight: bold; display: block; border-bottom: 1px dashed #ddd; }
-        .dish-ing-edit { font-size: 0.75rem; color: #666; }
-        .switch-group { background: #f9f9f9; padding: 10px; border-radius: 16px; margin: 10px 0; border: 1px solid #eee; }
-        .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-weight: bold; border-bottom: 1px solid #eee; }
-        .switch-container:last-child { border-bottom: none; }
-        .switch { position: relative; width: 44px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; transition: .3s; border-radius: 22px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background: var(--md-primary); }
-        input:checked + .slider:before { transform: translateX(22px); }
-        .mode-label { font-size: 0.75rem; color: #666; margin-right: 8px; }
+        .header-img { width: 100%; max-width: 320px; border-radius: 25px; box-shadow: var(--shadow-drop); }
+        .card { background: #fff; padding: 16px; border-radius: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 16px; border: 2px solid #fff; }
 
-        table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #ddd; table-layout: fixed; }
-        tr.day-row { border-bottom: 4px solid #ccc; }
-        th.day-header { width: 32px; background: #2e7d32; color: white; padding: 8px 2px; text-align: center; border-right: 1px solid #ddd; font-size: 0.9rem; }
-        td.menu-content { padding: 4px; }
-        .dish-section { margin-bottom: 6px; padding: 4px; background: #fcfcfc; border-radius: 8px; border: 1px solid #f0f0f0; }
-        .dish-header-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
-        .dish-type-label { font-size: 0.55rem; font-weight: bold; padding: 2px 4px; border-radius: 4px; color: white; min-width: 35px; text-align: center; }
-        .label-main { background: var(--md-primary); }
-        .label-side { background: var(--md-secondary); }
-        .label-salad { background: var(--md-salad); }
-        .label-soup { background: var(--md-soup); }
-        /* 固定ボタンのサイズ調整 */
-        .fix-btn { font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; min-width: 48px; text-align: center; }
-        .fix-btn.fixed { background: #333; color: #fff; border-color: #333; }
-        .menu-select { flex-grow: 1; padding: 2px; font-size: 0.8rem; font-weight: bold; border: 1px solid #ddd; background: #fff; border-radius: 4px; width: 100%; min-width: 0; }
-        .recipe-links-row { display: flex; gap: 4px; margin-top: 2px; }
-        .search-link { text-decoration: none; font-size: 0.6rem; background: #fff; padding: 1px 5px; border-radius: 4px; color: #555; border: 1px solid #ccc; display: inline-block; }
-        .ing-text { font-size: 0.6rem; color: #888; display: block; margin-top: 2px; line-height: 1.2; word-break: break-all; }
+        /* ドロップシール風デザイン（献立とリストに適用） */
+        .glossy-card {
+            background: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%) !important;
+            border: 3px solid #fff !important;
+            box-shadow: 0 10px 20px rgba(255, 182, 193, 0.4), inset 0 -5px 10px rgba(255, 255, 255, 0.8) !important;
+            position: relative;
+            overflow: hidden;
+        }
+        /* シールのツヤ出し */
+        .glossy-card::before {
+            content: ""; position: absolute; top: 5px; left: 10%; width: 80%; height: 15px;
+            background: rgba(255,255,255,0.6); border-radius: 50%; filter: blur(2px); pointer-events: none;
+        }
+
+        h2 { font-size: 1.1rem; color: #ff69b4; margin: 0; display: inline; text-shadow: 1px 1px 0 #fff; }
+        summary { cursor: pointer; outline: none; display: flex; align-items: center; border-left: 8px solid var(--md-primary); padding-left: 12px; border-radius: 4px; }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: ' 🍭'; font-size: 0.8rem; margin-left: auto; }
+        
+        input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 2px solid #ffe0ea; border-radius: 18px; font-size: 16px; box-sizing: border-box; background: #fff; }
+        button { background: linear-gradient(to bottom, #ff9ecd, #ff69b4); color: white; border: none; padding: 14px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 8px; box-shadow: 0 4px 0 #db4d8d; }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 0 #db4d8d; }
+        
+        .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
+        .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
+
+        /* 献立テーブル */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
+        tr.day-row { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }
+        th.day-header { width: 32px; background: #ff9ecd; color: white; padding: 12px 2px; text-align: center; border-radius: 15px 0 0 15px; font-size: 0.9rem; text-shadow: 1px 1px 0 rgba(0,0,0,0.1); }
+        td.menu-content { padding: 8px; background: white; border-radius: 0 15px 15px 0; border: 2px solid #fff; }
+        
+        .dish-section { margin-bottom: 8px; padding: 6px; background: #fff9fb; border-radius: 12px; border: 1px solid #ffebee; }
+        .dish-type-label { font-size: 0.55rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; color: white; min-width: 35px; text-align: center; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); }
+        .label-main { background: #f06292; }
+        .label-side { background: #ffb74d; }
+        .label-salad { background: #aed581; }
+        .label-soup { background: #9575cd; }
+
+        .fix-btn { font-size: 0.55rem; padding: 2px 6px; border-radius: 10px; border: 1px solid #ffc1e3; background: #fff; cursor: pointer; color: #f06292; font-weight: bold; min-width: 48px; }
+        .fix-btn.fixed { background: #f06292; color: #fff; border-color: #f06292; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .menu-select { flex-grow: 1; padding: 4px; font-size: 0.85rem; font-weight: bold; border: 1px solid #ffd1dc; background: #fff; border-radius: 8px; color: #880e4f; }
+        
+        .search-link { text-decoration: none; font-size: 0.6rem; background: #fff; padding: 2px 6px; border-radius: 8px; color: #f06292; border: 1px solid #ffc1e3; margin-right: 4px; font-weight: bold; }
+        .ing-text { font-size: 0.65rem; color: #9e9e9e; margin-top: 4px; display: block; }
+
+        /* 買い物リスト */
+        #shoppingListBody { list-style: none; padding: 0; }
+        #shoppingListBody li { background: #fff; margin-bottom: 6px; padding: 10px; border-radius: 15px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(255,182,193,0.2); display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: #d81b60; }
+        .batch-tag { font-size: 9px; background: #e1f5fe; color: #0288d1; padding: 2px 6px; border-radius: 10px; margin-left: 6px; }
 
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-        .batch-tag { font-size: 9px; background: #e3f2fd; color: #1565c0; padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
     </style>
 </head>
 <body>
 
     <div class="header-img-container"><img src="title.jpg" alt="Kodomo Cube" class="header-img"></div>
-    <h1 style="text-align:center; color:var(--md-primary); font-size:1.4rem; margin:10px 0;">🍴 献立＆買い物リストメーカー</h1>
+    <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
         <details><summary><h2>データの管理</h2></summary>
             <div class="details-content">
                 <select id="profileSelect"></select>
                 <div class="btn-row">
-                    <button onclick="loadProfile()" style="background:#78909c">読み込む</button>
-                    <button onclick="deleteProfile()" style="background:var(--md-error)">削除</button>
+                    <button onclick="loadProfile()" style="background:#ce93d8; box-shadow: 0 4px 0 #ab47bc;">読み込む</button>
+                    <button onclick="deleteProfile()" style="background:#ef9a9a; box-shadow: 0 4px 0 #e57373;">削除</button>
                 </div>
-                <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
+                <hr style="border:0; border-top:2px dashed #ffe0ea; margin:12px 0;">
                 <input type="text" id="profileName" placeholder="新規保存名">
-                <button onclick="saveProfile()" style="background:#006495">保存</button>
+                <button onclick="saveProfile()" style="background:#90caf9; box-shadow: 0 4px 0 #42a5f5;">保存</button>
                 <div class="btn-row">
-                    <button onclick="exportCSV()" style="background:#455a64; font-size:0.8rem;">CSV出力</button>
-                    <button onclick="document.getElementById('csvInput').click()" style="background:#455a64; font-size:0.8rem;">CSV入力</button>
+                    <button onclick="exportCSV()" style="background:#b0bec5; font-size:0.8rem; box-shadow: 0 4px 0 #78909c;">CSV出力</button>
+                    <button onclick="document.getElementById('csvInput').click()" style="background:#b0bec5; font-size:0.8rem; box-shadow: 0 4px 0 #78909c;">CSV入力</button>
                     <input type="file" id="csvInput" style="display:none" accept=".csv" onchange="importCSV(this)">
                 </div>
             </div>
@@ -98,11 +105,11 @@
         <details><summary><h2>料理の登録</h2></summary>
             <div class="details-content">
                 <div class="btn-row"><input type="text" id="addName" placeholder="料理名"><input type="text" id="addIng" placeholder="材料"></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:8px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
                     <button onclick="addDish('main')">主菜追加</button>
-                    <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜追加</button>
-                    <button onclick="addDish('salad')" style="background:var(--md-salad)">サラダ追加</button>
-                    <button onclick="addDish('soup')" style="background:var(--md-soup)">スープ追加</button>
+                    <button onclick="addDish('side')" style="background:#ffcc80; box-shadow: 0 4px 0 #ffa726;">副菜追加</button>
+                    <button onclick="addDish('salad')" style="background:#c5e1a5; box-shadow: 0 4px 0 #9ccc65;">サラダ追加</button>
+                    <button onclick="addDish('soup')" style="background:#ce93d8; box-shadow: 0 4px 0 #ab47bc;">スープ追加</button>
                 </div>
                 <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
                 <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
@@ -115,7 +122,7 @@
     <div class="card">
         <h2>作成条件</h2>
         <label>🏠 在庫にある食材</label><select id="inventorySelect" multiple></select>
-        <div class="switch-group">
+        <div class="switch-group" style="background: #fff0f5; border: 2px solid #ffe0ea; border-radius: 20px; padding: 12px; margin: 10px 0;">
             <div class="switch-container"><span>在庫食材を優先活用</span><label class="switch"><input type="checkbox" id="priorityMode" checked><span class="slider"></span></label></div>
             <div class="switch-container"><span>副菜: <span class="mode-label" id="sideBatchModeLabel">3日分作り置きON</span></span><label class="switch"><input type="checkbox" id="sideBatchMode" checked onchange="updateModeLabel('side')"><span class="slider"></span></label></div>
         </div>
@@ -124,26 +131,27 @@
         <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">固定していない献立を自動作成</button>
     </div>
 
-    <div class="card" id="planCard">
+    <div class="card glossy-card" id="planCard">
         <h2>📅 今週の献立</h2>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
-            <button onclick="clearUnfixed()" style="background:#78909c">固定以外クリア</button>
-            <button onclick="copyText('planBody')" style="background:#546e7a">テキストコピー</button>
+            <button onclick="clearUnfixed()" style="background:#ce93d8; box-shadow: 0 4px 0 #ab47bc;">固定以外クリア</button>
+            <button onclick="copyText('planBody')" style="background:#90caf9; box-shadow: 0 4px 0 #42a5f5;">テキストコピー</button>
         </div>
-        <button onclick="saveAsImage('planCard', '今週の献立')" style="background:#4527a0; margin-top:8px;">画像保存</button>
+        <button onclick="saveAsImage('planCard', '今週の献立')" style="background:#ff8aab; box-shadow: 0 4px 0 #f44336; margin-top:8px;">画像保存</button>
     </div>
 
-    <div class="card" id="shoppingListCard">
+    <div class="card glossy-card" id="shoppingListCard">
         <h2>🛒 買い物リスト</h2>
         <ul id="shoppingListBody"></ul>
         <div class="btn-row">
-            <button onclick="copyText('shoppingListBody')" style="background:#546e7a">テキストコピー</button>
-            <button onclick="saveAsImage('shoppingListCard', '買い物リスト')" style="background:#4527a0">画像保存</button>
+            <button onclick="copyText('shoppingListBody')" style="background:#90caf9; box-shadow: 0 4px 0 #42a5f5;">テキストコピー</button>
+            <button onclick="saveAsImage('shoppingListCard', '買い物リスト')" style="background:#ff8aab; box-shadow: 0 4px 0 #f44336;">画像保存</button>
         </div>
     </div>
 
     <script>
+        /* スクリプト部分は前回のロジックと全く同じ（表示文字列のみ変更を反映） */
         const STORAGE_KEY_DATA = 'Kondate_V50_Data';
         const STORAGE_KEY_PROFILES = 'Kondate_V50_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
@@ -168,7 +176,6 @@
                 const csvText = await response.text();
                 const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
                 const mains = [], sides = [], salads = [], soups = [];
-
                 for (let i = 1; i < lines.length; i++) {
                     const [type, name, ingString] = lines[i].split(',');
                     if (!type || !name) continue;
@@ -179,11 +186,9 @@
                     else if (t === 'salad') salads.push(dish);
                     else if (t === 'soup') soups.push(dish);
                 }
-
                 const githubProfile = { mains, sides, salads, soups, currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
                 profiles[SAMPLE_KEY] = githubProfile;
                 localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
-
                 if (data.mains.length === 0) {
                     data = JSON.parse(JSON.stringify(githubProfile));
                     saveToLocal();
@@ -194,7 +199,7 @@
         function updateModeLabel(key) {
             const isBatch = document.getElementById(key + 'BatchMode').checked;
             document.getElementById(key + 'ModeLabel').innerText = isBatch ? "3日分作り置きON" : "3日分作り置きOFF";
-            document.getElementById(key + 'ModeLabel').style.color = isBatch ? "var(--md-primary)" : "#666";
+            document.getElementById(key + 'ModeLabel').style.color = isBatch ? "#f06292" : "#999";
         }
 
         function renderAll() {
@@ -263,14 +268,13 @@
             const currentName = p[type];
             const isFixed = p[type + 'Fixed'];
             const dish = data[type + 's'].find(d => d.name === currentName) || {name:"", ing:[]};
-            
             const encodedName = encodeURIComponent(currentName);
             const rakutenUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodedName}/` : null;
             const cookpadUrl = currentName ? `https://cookpad.com/search/${encodedName}` : null;
 
             return `
             <div class="dish-section">
-                <div class="dish-header-row">
+                <div class="dish-header-row" style="display:flex; align-items:center; gap:4px; margin-bottom:4px; flex-wrap:wrap;">
                     <span class="dish-type-label ${labelClass}">${label}</span>
                     <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定ON':'固定OFF'}</span>
                     <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
@@ -279,7 +283,7 @@
                     </select>
                 </div>
                 ${currentName ? `
-                <div class="recipe-links-row">
+                <div class="recipe-links-row" style="display:flex; gap:4px; margin-top:2px;">
                     <a href="${rakutenUrl}" target="_blank" class="search-link">楽天レシピ</a>
                     <a href="${cookpadUrl}" target="_blank" class="search-link">クックパッド</a>
                 </div>` : ''}
@@ -304,7 +308,6 @@
                     data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name);
                 }
             });
-
             let currentSide = "";
             let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
             DAYS.forEach((_, i) => {
@@ -321,7 +324,6 @@
                     }
                 }
             });
-
             ['salad', 'soup'].forEach(type => {
                 let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]);
                 DAYS.forEach((_, i) => {
@@ -331,7 +333,6 @@
                     }
                 });
             });
-
             renderTable(); saveToLocal();
         }
 
@@ -355,8 +356,8 @@
                 });
             });
             document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => `
-                <li><span>${ing}</span>${inv.includes(ing)?'<span class="batch-tag">在庫あり</span>':''}
-                <a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link">🛒</a></li>`).join('');
+                <li><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag">在庫あり</span>':''}
+                <a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px">🛒</a></div></li>`).join('');
         }
 
         function updateProfileSelect() {
@@ -419,7 +420,7 @@
             const card = document.getElementById(id);
             const links = card.querySelectorAll('.search-link');
             links.forEach(l => l.style.display = 'none');
-            const canvas = await html2canvas(card, { scale: 2 });
+            const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8" });
             links.forEach(l => l.style.display = 'inline-block');
             const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
         }
