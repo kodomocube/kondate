@@ -98,6 +98,23 @@
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
+
+        /* コンパクト表示用のスタイル */
+        .compact-mode .dish-section { margin-bottom: 4px; padding: 4px; border: none; background: transparent; }
+        .compact-mode .dish-header-row { margin-bottom: 0; gap: 4px; flex-wrap: nowrap; }
+        .compact-mode .menu-select { margin-top: 0; padding: 4px; font-size: 0.8rem; border-radius: 6px; flex: 1; }
+        .compact-mode .search-link, 
+        .compact-mode .ing-text,
+        .compact-mode .fix-btn:not(.fixed) { display: none !important; }
+        .compact-mode .fix-btn.fixed { min-width: 40px; font-size: 0.5rem; padding: 2px 4px; }
+        .compact-mode .dish-type-label { min-width: 20px; padding: 2px 4px; font-size: 0.5rem; }
+        .compact-mode td.menu-content { padding: 4px; }
+
+        .toggle-compact-btn {
+            width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0;
+            background: linear-gradient(#f06292, #e91e63);
+            display: inline-block; vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -160,7 +177,10 @@
     </div>
 
     <div class="card glossy-card" id="planCard">
-        <h2>📅 今週の献立</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h2 style="margin:0;">📅 今週の献立</h2>
+            <button class="toggle-compact-btn" onclick="toggleCompact()">コンパクト表示</button>
+        </div>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
             <button class="btn-load" onclick="clearUnfixed()">固定以外クリア</button>
@@ -223,6 +243,13 @@
             } catch (e) { console.warn("GitHub CSV sync failed.", e); }
         }
 
+        function toggleCompact() {
+            const card = document.getElementById('planCard');
+            card.classList.toggle('compact-mode');
+            const btn = document.querySelector('.toggle-compact-btn');
+            btn.innerText = card.classList.contains('compact-mode') ? "標準表示" : "コンパクト表示";
+        }
+
         function updateModeLabel(key) {
             const isBatch = document.getElementById(key + 'BatchMode').checked;
             const label = document.getElementById(key + 'ModeLabel');
@@ -279,10 +306,10 @@
                 html += `<tr class="day-row">
                     <th class="day-header">${day}</th>
                     <td class="menu-content">
-                        ${renderRow(i, 'main', '主菜', 'label-main')}
-                        ${renderRow(i, 'side', '副菜', 'label-side')}
-                        ${renderRow(i, 'salad', 'サラダ', 'label-salad')}
-                        ${renderRow(i, 'soup', 'スープ', 'label-soup')}
+                        ${renderRow(i, 'main', '主', 'label-main')}
+                        ${renderRow(i, 'side', '副', 'label-side')}
+                        ${renderRow(i, 'salad', 'サ', 'label-salad')}
+                        ${renderRow(i, 'soup', '汁', 'label-soup')}
                     </td>
                 </tr>`;
             });
@@ -310,7 +337,7 @@
                     </select>
                 </div>
                 ${currentName ? `
-                <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;">
+                <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;" class="recipe-links">
                     <a href="${rakutenUrl}" target="_blank" class="search-link">楽天レシピ</a>
                     <a href="${cookpadUrl}" target="_blank" class="search-link">クックパッド</a>
                 </div>` : ''}
@@ -328,18 +355,16 @@
             const prio = document.getElementById('priorityMode').checked;
             const sideBatch = document.getElementById('sideBatchMode').checked;
 
-            // 主菜
             let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
             DAYS.forEach((_, i) => {
                 if(!data.currentPlan[i].mainFixed) {
                     let pool = data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name));
-                    if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name)); // リスト不足時は重複許可
+                    if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name));
                     const d = pickDish(pool, want, inv, prio);
                     data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name);
                 }
             });
 
-            // 副菜
             let currentSide = "";
             let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
             DAYS.forEach((_, i) => {
@@ -361,15 +386,12 @@
                 }
             });
 
-            // サラダ・スープ
             ['salad', 'soup'].forEach(type => {
                 let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]);
                 DAYS.forEach((_, i) => {
                     if(!data.currentPlan[i][type+'Fixed']) {
                         let pool = data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name));
-                        if(pool.length === 0) {
-                            pool = data[type+'s'].filter(d => !exc.includes(d.name)); // 足りなければ重複を許可して全リストから選ぶ
-                        }
+                        if(pool.length === 0) pool = data[type+'s'].filter(d => !exc.includes(d.name));
                         const d = pickDish(pool, want, inv, prio);
                         data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name);
                     }
