@@ -78,17 +78,24 @@
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* コンパクト専用スタイル */
-        .compact-mode .dish-type-label, .compact-mode .menu-select, .compact-mode .fix-btn, .compact-mode .search-link, .compact-mode .ing-text { display: none !important; }
-        .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
-        .compact-mode th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
-        .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
-        .compact-mode .day-row:last-child td { border-bottom: none; }
-        .drop-row { display: flex; gap: 6px; width: 100%; }
+        /* コンパクト専用スタイル：planCardに.compact-modeがある時だけ適用 */
+        .compact-mode#planCard .dish-type-label, 
+        .compact-mode#planCard .menu-select, 
+        .compact-mode#planCard .fix-btn, 
+        .compact-mode#planCard .search-link, 
+        .compact-mode#planCard .ing-text { display: none !important; }
+        
+        .compact-mode#planCard table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
+        .compact-mode#planCard th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
+        .compact-mode#planCard td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
+        .compact-mode#planCard .day-row:last-child td { border-bottom: none; }
+        
+        .drop-row { display: none; gap: 6px; width: 100%; }
+        .compact-mode#planCard .drop-row { display: flex; }
+        
         .drop-badge { display: flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important; flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center; line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; }
         .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
-        .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
-        .compact-mode .dish-header-row { display: contents; }
+        
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
         
         .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
@@ -111,7 +118,9 @@
         .fix-status-label { font-weight: bold; color: #f06292; font-size: 0.9rem; }
     </style>
 </head>
-<body class="compact-mode"> <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
+<body>
+
+    <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
     <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
@@ -168,7 +177,8 @@
         <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()">固定していない献立を自動作成</button>
     </div>
 
-    <div class="card glossy-card compact-mode" id="planCard"> <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <div class="card glossy-card compact-mode" id="planCard">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h2 style="margin:0;">📅 今週の献立</h2>
             <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示</button>
         </div>
@@ -205,9 +215,7 @@
     <div id="dishPickerOverlay" onclick="closeDishPicker()">
         <div id="dishPickerContent" onclick="event.stopPropagation()">
             <div class="picker-title" id="pickerTitle">料理の変更</div>
-            
             <div id="pickerFixArea"></div>
-
             <div class="picker-grid" id="pickerGrid"></div>
             <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">キャンセル</button>
         </div>
@@ -267,11 +275,6 @@
             await syncSampleFromGitHubCSV();
             updateProfileSelect();
             renderAll();
-            // 初期表示用
-            const card = document.getElementById('planCard');
-            if(card.classList.contains('compact-mode')) {
-                document.querySelector('.toggle-compact-btn').innerText = "詳細表示";
-            }
             renderTable();
             updateModeLabel('side');
         }
@@ -302,9 +305,9 @@
 
         function toggleCompact() {
             const card = document.getElementById('planCard');
-            card.classList.toggle('compact-mode');
+            const isNowCompact = card.classList.toggle('compact-mode');
             const btn = document.querySelector('.toggle-compact-btn');
-            btn.innerText = card.classList.contains('compact-mode') ? "詳細表示" : "コンパクト表示";
+            btn.innerText = isNowCompact ? "詳細表示" : "コンパクト表示";
             renderTable();
         }
 
@@ -355,31 +358,24 @@
             let html = "";
             DAYS.forEach((day, i) => {
                 const p = data.currentPlan[i];
-                if (isCompact) {
-                    html += `<tr class="day-row day-row-${i}">
-                        <th class="day-header">${day}</th>
-                        <td class="menu-content">
-                            <div class="drop-row">
-                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}主菜なし</span>`}
-                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}副菜なし</span>`}
-                            </div>
-                            <div class="drop-row">
-                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}サラダなし</span>`}
-                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}スープなし</span>`}
-                            </div>
-                        </td>
-                    </tr>`;
-                } else {
-                    html += `<tr class="day-row day-row-${i}">
-                        <th class="day-header">${day}</th>
-                        <td class="menu-content">
-                            ${renderRow(i, 'main', '主', 'label-main')}
-                            ${renderRow(i, 'side', '副', 'label-side')}
-                            ${renderRow(i, 'salad', 'サ', 'label-salad')}
-                            ${renderRow(i, 'soup', '汁', 'label-soup')}
-                        </td>
-                    </tr>`;
-                }
+                html += `<tr class="day-row day-row-${i}">
+                    <th class="day-header">${day}</th>
+                    <td class="menu-content">
+                        <div class="drop-row">
+                            ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}主菜なし</span>`}
+                            ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}副菜なし</span>`}
+                        </div>
+                        <div class="drop-row">
+                            ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}サラダなし</span>`}
+                            ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}スープなし</span>`}
+                        </div>
+                        
+                        ${renderRow(i, 'main', '主', 'label-main')}
+                        ${renderRow(i, 'side', '副', 'label-side')}
+                        ${renderRow(i, 'salad', 'サ', 'label-salad')}
+                        ${renderRow(i, 'soup', '汁', 'label-soup')}
+                    </td>
+                </tr>`;
             });
             document.getElementById('planBody').innerHTML = html;
             updateShoppingList();
@@ -410,7 +406,6 @@
         function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
         function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
 
-        /* セレクターパネルのロジック */
         function openDishPicker(dayIdx, type) {
             const overlay = document.getElementById('dishPickerOverlay');
             const grid = document.getElementById('pickerGrid');
@@ -420,27 +415,20 @@
             const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
             
             title.innerText = `${DAYS[dayIdx]}曜日の${typeJP}を選択`;
-            
-            // 固定切り替えボタン
             fixArea.innerHTML = `
                 <div class="fix-toggle-panel" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')">
-                    <span class="fix-status-label">${isFixed ? '🔒 固定中 (自動作成で変わりません)' : '🔓 未固定 (自動作成で変わります)'}</span>
-                    <span class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除する':'固定する'}</span>
+                    <span class="fix-status-label">${isFixed ? '🔒 固定中 (自動作成で不変)' : '🔓 未固定 (自動作成で変化)'}</span>
+                    <span class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除':'固定'}</span>
                 </div>
             `;
-
             grid.innerHTML = `<div class="picker-btn none" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
-            
             data[type + 's'].forEach(dish => {
                 grid.innerHTML += `<div class="picker-btn" onclick="updateChoice(${dayIdx},'${type}','${dish.name}'); closeDishPicker();">${dish.name}</div>`;
             });
-            
             overlay.style.display = 'flex';
         }
 
-        function closeDishPicker() {
-            document.getElementById('dishPickerOverlay').style.display = 'none';
-        }
+        function closeDishPicker() { document.getElementById('dishPickerOverlay').style.display = 'none'; }
 
         function generatePlan() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
@@ -500,8 +488,6 @@
             const card = document.getElementById(id);
             const links = card.querySelectorAll('.search-link');
             const btns = card.querySelectorAll('button');
-            const now = new Date();
-            const timestamp = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2) + '_' + ('0' + now.getHours()).slice(-2) + ('0' + now.getMinutes()).slice(-2) + ('0' + now.getSeconds()).slice(-2);
             links.forEach(l => l.style.display = 'none');
             btns.forEach(b => b.style.display = 'none');
             const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true });
@@ -509,7 +495,7 @@
             btns.forEach(b => b.style.display = 'block');
             const link = document.createElement('a');
             link.href = canvas.toDataURL("image/png");
-            link.download = `${name}_${timestamp}.png`;
+            link.download = `${name}.png`;
             link.click();
         }
 
@@ -523,12 +509,8 @@
                 const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const file = new File([blob], `${name}.png`, { type: 'image/png' });
-                if (navigator.share && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: name });
-                } else {
-                    alert("お使いのブラウザは画像共有に対応していません。通常の画像保存をご利用ください。");
-                }
-            } catch (err) { console.error("Share failed:", err); } finally {
+                if (navigator.share && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); }
+            } catch (err) { console.error(err); } finally {
                 links.forEach(l => l.style.display = 'inline-block');
                 btns.forEach(b => b.style.display = 'block');
             }
@@ -548,8 +530,7 @@
 
         function sendToLine() {
             const txt = "【買い物リスト】\n" + getShoppingText();
-            const url = "https://line.me/R/msg/text/?" + encodeURIComponent(txt);
-            window.open(url, '_blank');
+            window.open("https://line.me/R/msg/text/?" + encodeURIComponent(txt), '_blank');
         }
 
         function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
