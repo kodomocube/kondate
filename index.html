@@ -46,6 +46,15 @@
         th.day-header { width: 35px; background: #ff9ecd; color: white; border-radius: 15px 0 0 15px; text-shadow: 1px 1px 0 rgba(0,0,0,0.1); }
         td.menu-content { padding: 8px; background: white; border-radius: 0 15px 15px 0; border: 2px solid #fff; }
         
+        /* 曜日ごとの色定義（標準・コンパクト共通） */
+        .day-row-0 th.day-header { background-color: #fdd835 !important; } /* 月 */
+        .day-row-1 th.day-header { background-color: #ef5350 !important; } /* 火 */
+        .day-row-2 th.day-header { background-color: #4fc3f7 !important; } /* 水 */
+        .day-row-3 th.day-header { background-color: #81c784 !important; } /* 木 */
+        .day-row-4 th.day-header { background-color: #f06292 !important; } /* 金 */
+        .day-row-5 th.day-header { background-color: #5c6bc0 !important; } /* 土 */
+        .day-row-6 th.day-header { background-color: #d32f2f !important; } /* 日 */
+
         .dish-section { margin-bottom: 12px; padding: 8px; background: #fff9fb; border-radius: 15px; border: 1px solid #ffebee; }
         .dish-header-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
         
@@ -74,7 +83,6 @@
         .compact-mode .dish-type-label, .compact-mode .menu-select, .compact-mode .fix-btn, .compact-mode .search-link, .compact-mode .ing-text { display: none !important; }
         .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
         .compact-mode th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
-        .compact-mode tr.day-row-0 th { background-color: #fdd835 !important; } .compact-mode tr.day-row-1 th { background-color: #ef5350 !important; } .compact-mode tr.day-row-2 th { background-color: #4fc3f7 !important; } .compact-mode tr.day-row-3 th { background-color: #81c784 !important; } .compact-mode tr.day-row-4 th { background-color: #f06292 !important; } .compact-mode tr.day-row-5 th { background-color: #5c6bc0 !important; } .compact-mode tr.day-row-6 th { background-color: #d32f2f !important; }
         .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
         .compact-mode .day-row:last-child td { border-bottom: none; }
         .drop-row { display: flex; gap: 6px; width: 100%; }
@@ -337,7 +345,7 @@
                         </td>
                     </tr>`;
                 } else {
-                    html += `<tr class="day-row">
+                    html += `<tr class="day-row day-row-${i}">
                         <th class="day-header">${day}</th>
                         <td class="menu-content">
                             ${renderRow(i, 'main', '主', 'label-main')}
