@@ -322,10 +322,24 @@
 
         function toggleBatchClear(type) {
             const allLocked = data.currentPlan.every(p => p[type + 'Fixed']);
+            const typeJP = type === 'salad' ? 'サラダ' : 'スープ';
             
             if (allLocked) {
-                // ロック解除
-                data.currentPlan.forEach(p => p[type + 'Fixed'] = false);
+                // ロック解除してランダムで選ぶ
+                const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+                const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
+                const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
+                const prio = document.getElementById('priorityMode').checked;
+                
+                let used = [];
+                data.currentPlan.forEach(p => {
+                    p[type + 'Fixed'] = false;
+                    let pool = data[type + 's'].filter(d => !exc.includes(d.name) && !used.includes(d.name));
+                    if (pool.length === 0) pool = data[type + 's'].filter(d => !exc.includes(d.name));
+                    const d = pickDish(pool, want, inv, prio);
+                    p[type] = d.name;
+                    if(d.name) used.push(d.name);
+                });
             } else {
                 // なしにしてロック
                 data.currentPlan.forEach(p => {
@@ -344,8 +358,8 @@
             const sLocked = data.currentPlan.every(p => p.saladFixed);
             const pLocked = data.currentPlan.every(p => p.soupFixed);
             
-            sBtn.innerText = sLocked ? "一括でサラダのロック解除" : "一括でサラダをなしにする";
-            pBtn.innerText = pLocked ? "一括でスープのロック解除" : "一括でスープをなしにする";
+            sBtn.innerText = sLocked ? "一括でサラダをありにする" : "一括でサラダをなしにする";
+            pBtn.innerText = pLocked ? "一括でスープをありにする" : "一括でスープをなしにする";
         }
 
         function updateModeLabel(key) {
@@ -481,7 +495,7 @@
         }
 
         function pickDish(pool, want, inv, prio) { if (!pool || pool.length === 0) return {name:"", ing:[]}; let shuffled = shuffle([...pool]); let f = shuffled.filter(d => want.includes(d.name)); if (!f.length && prio) f = shuffled.filter(d => d.ing.some(i => inv.includes(i))); return (f.length ? f : shuffled)[0]; }
-        function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], i]; } return a; }
+        function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
         function updateShoppingList() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
