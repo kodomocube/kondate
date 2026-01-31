@@ -60,6 +60,7 @@
         .menu-select { width: 100% !important; flex: 0 0 100%; margin-top: 4px; padding: 8px; font-size: 0.9rem; border: 1px solid #ffd1dc; border-radius: 10px; color: #880e4f; background: #fff; box-sizing: border-box; }
         .search-link { text-decoration: none; font-size: 0.65rem; background: #fff; padding: 3px 8px; border-radius: 10px; color: #f06292; border: 1px solid #ffc1e3; font-weight: bold; white-space: nowrap; }
 
+        #shoppingListBody { list-style: none; padding: 0; }
         #shoppingListBody li { background: #fff; margin-bottom: 8px; padding: 12px; border-radius: 20px; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(255,182,193,0.3); display: flex; align-items: center; justify-content: space-between; color: #d81b60; font-weight: bold; }
 
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -67,42 +68,21 @@
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
         /* コンパクト専用スタイル */
-        .compact-mode .dish-type-label,
-        .compact-mode .menu-select,
-        .compact-mode .fix-btn,
-        .compact-mode .search-link,
-        .compact-mode .ing-text { display: none !important; }
-
+        .compact-mode .dish-type-label, .compact-mode .menu-select, .compact-mode .fix-btn, .compact-mode .search-link, .compact-mode .ing-text { display: none !important; }
         .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
         .compact-mode th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
-        
-        .compact-mode tr.day-row-0 th { background-color: #fdd835 !important; } /* 月 */
-        .compact-mode tr.day-row-1 th { background-color: #ef5350 !important; } /* 火 */
-        .compact-mode tr.day-row-2 th { background-color: #4fc3f7 !important; } /* 水 */
-        .compact-mode tr.day-row-3 th { background-color: #81c784 !important; } /* 木 */
-        .compact-mode tr.day-row-4 th { background-color: #f06292 !important; } /* 金 */
-        .compact-mode tr.day-row-5 th { background-color: #5c6bc0 !important; } /* 土 */
-        .compact-mode tr.day-row-6 th { background-color: #d32f2f !important; } /* 日 */
-
+        .compact-mode tr.day-row-0 th { background-color: #fdd835 !important; } .compact-mode tr.day-row-1 th { background-color: #ef5350 !important; } .compact-mode tr.day-row-2 th { background-color: #4fc3f7 !important; } .compact-mode tr.day-row-3 th { background-color: #81c784 !important; } .compact-mode tr.day-row-4 th { background-color: #f06292 !important; } .compact-mode tr.day-row-5 th { background-color: #5c6bc0 !important; } .compact-mode tr.day-row-6 th { background-color: #d32f2f !important; }
         .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
         .compact-mode .day-row:last-child td { border-bottom: none; }
-
         .drop-row { display: flex; gap: 6px; width: 100%; }
-        /* 画像保存時の再現性を高めるため、box-shadowや複雑なグラデーションを整理 */
-        .drop-badge {
-            display: flex; align-items: center; justify-content: center;
-            padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important;
-            flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center;
-            line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-        /* ツヤ出し効果を擬似要素ではなく、より単純な方法に変更 */
+        .drop-badge { display: flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important; flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center; line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all; border: 1px solid rgba(0,0,0,0.1); }
         .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
-
         .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
         .compact-mode .dish-header-row { display: contents; }
-
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
+        
+        .order-toggle-btn { width: auto; padding: 4px 10px; font-size: 0.65rem; margin-bottom: 0; background: linear-gradient(#ffa726, #fb8c00); display: inline-block; }
+        .order-def { font-size: 0.65rem; color: #888; margin-top: 8px; padding: 8px; background: #fafafa; border-radius: 10px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -178,8 +158,15 @@
     </div>
 
     <div class="card glossy-card" id="shoppingListCard">
-        <h2>🛒 買い物リスト</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h2 style="margin:0;">🛒 買い物リスト</h2>
+            <button class="order-toggle-btn" id="orderToggle" onclick="toggleOrder()">陳列順: ON</button>
+        </div>
         <ul id="shoppingListBody"></ul>
+        <div class="order-def" id="orderDef">
+            <b>【陳列順の定義】</b><br>
+            野菜・果物 ➔ 肉 ➔ 魚 ➔ 乳製品・豆腐・納豆 ➔ 冷凍・加工食品 ➔ 調味料・その他
+        </div>
         <div class="btn-row">
             <button class="btn-save" onclick="copyText('shoppingListBody')">テキストコピー</button>
             <button class="btn-image" onclick="saveAsImage('shoppingListCard', '買い物リスト')">画像保存</button>
@@ -187,12 +174,34 @@
     </div>
 
     <script>
-        // (JSロジックは変更なし)
         const STORAGE_KEY_DATA = 'Kondate_V50_Data';
         const STORAGE_KEY_PROFILES = 'Kondate_V50_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
         const GITHUB_CSV_URL = "https://raw.githubusercontent.com/kodomocube/kondate/main/sample.csv";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
+
+        let isOrderOn = true;
+        const CATEGORY_ORDER = { "野菜・果物": 0, "肉": 1, "魚": 2, "乳製品・豆腐・納豆": 3, "冷凍・加工食品": 4, "調味料・その他": 5 };
+        const KEYWORDS = {
+            "野菜・果物": ["キャベツ", "レタス", "トマト", "玉ねぎ", "人参", "ピーマン", "茄子", "きゅうり", "じゃがいも", "白菜", "ねぎ", "きのこ", "ほうれん草", "小松菜", "ブロッコリー", "大根", "りんご", "バナナ"],
+            "肉": ["豚肉", "鶏肉", "牛肉", "挽肉", "もも肉", "むね肉", "バラ", "ロース", "ハム", "ソーセージ", "ベーコン"],
+            "魚": ["魚", "鮭", "鯖", "鱈", "刺身", "海老", "貝", "イカ", "タコ", "ツナ"],
+            "乳製品・豆腐・納豆": ["卵", "牛乳", "チーズ", "バター", "豆腐", "納豆", "厚揚げ", "油揚げ", "ヨーグルト"],
+            "冷凍・加工食品": ["冷凍", "うどん", "パスタ", "パン", "餃子"],
+            "調味料・その他": ["醤油", "味噌", "砂糖", "塩", "油", "酢", "ケチャップ", "マヨネーズ", "だし", "つゆ", "カレー"]
+        };
+
+        function getCategory(ing) {
+            for (const [cat, keys] of Object.entries(KEYWORDS)) { if (keys.some(k => ing.includes(k))) return cat; }
+            return "調味料・その他";
+        }
+
+        function toggleOrder() {
+            isOrderOn = !isOrderOn;
+            document.getElementById('orderToggle').innerText = `陳列順: ${isOrderOn ? 'ON' : 'OFF'}`;
+            document.getElementById('orderDef').style.display = isOrderOn ? 'block' : 'none';
+            updateShoppingList();
+        }
 
         let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
         let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
@@ -345,67 +354,37 @@
             const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
             const prio = document.getElementById('priorityMode').checked;
             const sideBatch = document.getElementById('sideBatchMode').checked;
-
             let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
-            DAYS.forEach((_, i) => {
-                if(!data.currentPlan[i].mainFixed) {
-                    let pool = data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name));
-                    if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name));
-                    const d = pickDish(pool, want, inv, prio);
-                    data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name);
-                }
-            });
-
+            DAYS.forEach((_, i) => { if(!data.currentPlan[i].mainFixed) { let pool = data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name)); if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name); } });
             let currentSide = "";
             let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
-            DAYS.forEach((_, i) => {
-                if(!data.currentPlan[i].sideFixed) {
-                    if(sideBatch) {
-                        if(i % 3 === 0 || !currentSide) {
-                            let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name));
-                            if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name));
-                            const d = pickDish(pool, want, inv, prio);
-                            currentSide = d.name; if(d.name) usedS.push(d.name);
-                        }
-                        data.currentPlan[i].side = currentSide;
-                    } else {
-                        let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name));
-                        if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name));
-                        const d = pickDish(pool, want, inv, prio);
-                        data.currentPlan[i].side = d.name; if(d.name) usedS.push(d.name);
-                    }
-                }
-            });
-
-            ['salad', 'soup'].forEach(type => {
-                let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]);
-                DAYS.forEach((_, i) => {
-                    if(!data.currentPlan[i][type+'Fixed']) {
-                        let pool = data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name));
-                        if(pool.length === 0) pool = data[type+'s'].filter(d => !exc.includes(d.name));
-                        const d = pickDish(pool, want, inv, prio);
-                        data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name);
-                    }
-                });
-            });
+            DAYS.forEach((_, i) => { if(!data.currentPlan[i].sideFixed) { if(sideBatch) { if(i % 3 === 0 || !currentSide) { let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)); if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); currentSide = d.name; if(d.name) usedS.push(d.name); } data.currentPlan[i].side = currentSide; } else { let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)); if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i].side = d.name; if(d.name) usedS.push(d.name); } } });
+            ['salad', 'soup'].forEach(type => { let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]); DAYS.forEach((_, i) => { if(!data.currentPlan[i][type+'Fixed']) { let pool = data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name)); if(pool.length === 0) pool = data[type+'s'].filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name); } }); });
             renderTable(); saveToLocal();
         }
 
-        function pickDish(pool, want, inv, prio) {
-            if (!pool || pool.length === 0) return {name:"", ing:[]};
-            let shuffled = shuffle([...pool]);
-            let f = shuffled.filter(d => want.includes(d.name));
-            if (!f.length && prio) f = shuffled.filter(d => d.ing.some(i => inv.includes(i)));
-            return (f.length ? f : shuffled)[0];
-        }
-
+        function pickDish(pool, want, inv, prio) { if (!pool || pool.length === 0) return {name:"", ing:[]}; let shuffled = shuffle([...pool]); let f = shuffled.filter(d => want.includes(d.name)); if (!f.length && prio) f = shuffled.filter(d => d.ing.some(i => inv.includes(i))); return (f.length ? f : shuffled)[0]; }
         function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
         function updateShoppingList() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
             let ings = new Set();
             data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { const d = data[t+'s'].find(x => x.name === p[t]); if(d) d.ing.forEach(ing => ings.add(ing)); }); });
-            document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => `<li><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px">🛒</a></div></li>`).join('');
+            let listArr = Array.from(ings);
+            if (isOrderOn) {
+                listArr.sort((a, b) => {
+                    const catA = getCategory(a), catB = getCategory(b);
+                    if (CATEGORY_ORDER[catA] !== CATEGORY_ORDER[catB]) return CATEGORY_ORDER[catA] - CATEGORY_ORDER[catB];
+                    return a.localeCompare(b, 'ja');
+                });
+            } else { listArr.sort((a, b) => a.localeCompare(b, 'ja')); }
+            let currentCat = "", html = "";
+            listArr.forEach(ing => {
+                const cat = getCategory(ing);
+                if (isOrderOn && cat !== currentCat) { html += `<li style="background:#fefefe; font-size:0.7rem; color:#888; padding:4px 12px; border-radius:0; box-shadow:none; border-bottom:1px solid #eee;">【${cat}】</li>`; currentCat = cat; }
+                html += `<li><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px">🛒</a></div></li>`;
+            });
+            document.getElementById('shoppingListBody').innerHTML = html;
         }
 
         function updateProfileSelect() {
@@ -415,85 +394,14 @@
             select.innerHTML = options;
         }
 
-        function saveProfile() {
-            const n = document.getElementById('profileName').value.trim();
-            if (n && n !== SAMPLE_KEY) { profiles[n] = JSON.parse(JSON.stringify(data)); localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); alert("保存しました"); }
-        }
-
-        function loadProfile() {
-            const n = document.getElementById('profileSelect').value;
-            data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) }));
-            renderAll(); renderTable();
-        }
-
-        function deleteProfile() {
-            const n = document.getElementById('profileSelect').value;
-            if (n === SAMPLE_KEY) return alert("サンプルは削除不可");
-            if (confirm(n + " 削除しますか？")) { delete profiles[n]; localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); }
-        }
-
-        function exportCSV() {
-            let csv = "Type,Name,Ingredients\n";
-            ['main', 'side', 'salad', 'soup'].forEach(t => data[t+'s'].forEach(d => csv += `${t},"${d.name}","${d.ing.join('/')}"\n`));
-            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click();
-        }
-
-        function importCSV(input) {
-            const file = input.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const lines = e.target.result.split(/\r?\n/);
-                const newData = { mains:[], sides:[], salads:[], soups:[] };
-                for (let i = 1; i < lines.length; i++) {
-                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (row.length < 3) continue;
-                    const t = row[0].trim().toLowerCase() + 's';
-                    const name = row[1].replace(/"/g, '').trim();
-                    const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s);
-                    if (newData[t]) newData[t].push({ name, ing });
-                }
-                if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); }
-                input.value = "";
-            };
-            reader.readAsText(file);
-        }
-
+        function saveProfile() { const n = document.getElementById('profileName').value.trim(); if (n && n !== SAMPLE_KEY) { profiles[n] = JSON.parse(JSON.stringify(data)); localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); alert("保存しました"); } }
+        function loadProfile() { const n = document.getElementById('profileSelect').value; data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) })); renderAll(); renderTable(); }
+        function deleteProfile() { const n = document.getElementById('profileSelect').value; if (n === SAMPLE_KEY) return alert("サンプルは削除不可"); if (confirm(n + " 削除しますか？")) { delete profiles[n]; localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); } }
+        function exportCSV() { let csv = "Type,Name,Ingredients\n"; ['main', 'side', 'salad', 'soup'].forEach(t => data[t+'s'].forEach(d => csv += `${t},"${d.name}","${d.ing.join('/')}"\n`)); const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click(); }
+        function importCSV(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const lines = e.target.result.split(/\r?\n/); const newData = { mains:[], sides:[], salads:[], soups:[] }; for (let i = 1; i < lines.length; i++) { const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if (row.length < 3) continue; const t = row[0].trim().toLowerCase() + 's'; const name = row[1].replace(/"/g, '').trim(); const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s); if (newData[t]) newData[t].push({ name, ing }); } if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); } input.value = ""; }; reader.readAsText(file); }
         function clearUnfixed() { data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); }); renderTable(); saveToLocal(); }
-
-        async function saveAsImage(id, name) {
-            const card = document.getElementById(id);
-            const links = card.querySelectorAll('.search-link');
-            const btns = card.querySelectorAll('button');
-            
-            // 保存前にボタン等を隠す
-            links.forEach(l => l.style.display = 'none');
-            btns.forEach(b => b.style.display = 'none');
-            
-            // html2canvasの設定を最適化
-            const canvas = await html2canvas(card, { 
-                scale: 2, 
-                backgroundColor: "#fff5f8",
-                useCORS: true, // 画像などが別ドメインにある場合の対策
-                logging: false
-            });
-            
-            links.forEach(l => l.style.display = 'inline-block');
-            btns.forEach(b => b.style.display = 'block');
-            
-            const link = document.createElement('a'); 
-            link.href = canvas.toDataURL("image/png"); 
-            link.download = `${name}.png`; 
-            link.click();
-        }
-
-        function copyText(id) {
-            let txt = "";
-            if (id === 'planBody') { txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n'); }
-            else if (id === 'shoppingListBody') { txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => { let text = li.querySelector('span').innerText; if(li.querySelector('.batch-tag')) text += ' (在庫あり)'; return text; }).join('\n'); }
-            navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
-        }
-
+        async function saveAsImage(id, name) { const card = document.getElementById(id); const links = card.querySelectorAll('.search-link'); const btns = card.querySelectorAll('button'); links.forEach(l => l.style.display = 'none'); btns.forEach(b => b.style.display = 'none'); const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true }); links.forEach(l => l.style.display = 'inline-block'); btns.forEach(b => b.style.display = 'block'); const link = document.createElement('a'); link.href = canvas.toDataURL("image/png"); link.download = `${name}.png`; link.click(); }
+        function copyText(id) { let txt = ""; if (id === 'planBody') { txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n'); } else if (id === 'shoppingListBody') { const lis = document.getElementById(id).querySelectorAll('li'); txt = Array.from(lis).map(li => li.innerText.replace('🛒', '').trim()).join('\n'); } navigator.clipboard.writeText(txt).then(() => alert("コピーしました")); }
         function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
         init();
     </script>
