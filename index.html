@@ -46,14 +46,13 @@
         th.day-header { width: 35px; background: #ff9ecd; color: white; border-radius: 15px 0 0 15px; text-shadow: 1px 1px 0 rgba(0,0,0,0.1); }
         td.menu-content { padding: 8px; background: white; border-radius: 0 15px 15px 0; border: 2px solid #fff; }
         
-        /* 曜日ごとの色定義（標準・コンパクト共通） */
-        .day-row-0 th.day-header { background-color: #fdd835 !important; } /* 月 */
-        .day-row-1 th.day-header { background-color: #ef5350 !important; } /* 火 */
-        .day-row-2 th.day-header { background-color: #4fc3f7 !important; } /* 水 */
-        .day-row-3 th.day-header { background-color: #81c784 !important; } /* 木 */
-        .day-row-4 th.day-header { background-color: #f06292 !important; } /* 金 */
-        .day-row-5 th.day-header { background-color: #5c6bc0 !important; } /* 土 */
-        .day-row-6 th.day-header { background-color: #d32f2f !important; } /* 日 */
+        .day-row-0 th.day-header { background-color: #fdd835 !important; }
+        .day-row-1 th.day-header { background-color: #ef5350 !important; }
+        .day-row-2 th.day-header { background-color: #4fc3f7 !important; }
+        .day-row-3 th.day-header { background-color: #81c784 !important; }
+        .day-row-4 th.day-header { background-color: #f06292 !important; }
+        .day-row-5 th.day-header { background-color: #5c6bc0 !important; }
+        .day-row-6 th.day-header { background-color: #d32f2f !important; }
 
         .dish-section { margin-bottom: 12px; padding: 8px; background: #fff9fb; border-radius: 15px; border: 1px solid #ffebee; }
         .dish-header-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -86,7 +85,7 @@
         .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
         .compact-mode .day-row:last-child td { border-bottom: none; }
         .drop-row { display: flex; gap: 6px; width: 100%; }
-        .drop-badge { display: flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important; flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center; line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all; border: 1px solid rgba(0,0,0,0.1); }
+        .drop-badge { display: flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important; flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center; line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; }
         .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
         .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
         .compact-mode .dish-header-row { display: contents; }
@@ -335,12 +334,12 @@
                         <th class="day-header">${day}</th>
                         <td class="menu-content">
                             <div class="drop-row">
-                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292">${p.main}</span>` : ''}
-                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d">${p.side}</span>` : ''}
+                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="editCompactChoice(${i},'main')">${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'main')">主菜なし</span>`}
+                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="editCompactChoice(${i},'side')">${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'side')">副菜なし</span>`}
                             </div>
                             <div class="drop-row">
-                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581">${p.salad}</span>` : ''}
-                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd">${p.soup}</span>` : ''}
+                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="editCompactChoice(${i},'salad')">${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'salad')">サラダなし</span>`}
+                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="editCompactChoice(${i},'soup')">${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="editCompactChoice(${i},'soup')">スープなし</span>`}
                             </div>
                         </td>
                     </tr>`;
@@ -384,6 +383,19 @@
 
         function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
         function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
+
+        function editCompactChoice(dayIdx, type) {
+            const list = data[type + 's'];
+            if (list.length === 0) { alert("登録されている料理がありません。"); return; }
+            let message = `${DAYS[dayIdx]}曜日の${type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ'}を選択してください：\n0: なし\n`;
+            list.forEach((d, idx) => { message += `${idx + 1}: ${d.name}\n`; });
+            const result = prompt(message, "");
+            if (result === null) return;
+            const choiceIdx = parseInt(result);
+            if (choiceIdx === 0) { updateChoice(dayIdx, type, ""); }
+            else if (choiceIdx > 0 && choiceIdx <= list.length) { updateChoice(dayIdx, type, list[choiceIdx - 1].name); }
+            else { alert("無効な番号です。"); }
+        }
 
         function generatePlan() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
