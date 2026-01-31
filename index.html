@@ -79,11 +79,15 @@
         .drop-row { display: flex; gap: 6px; width: 100%; }
         .drop-badge { display: flex; align-items: center; justify-content: center; padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important; flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center; line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all; border: 1px solid rgba(0,0,0,0.1); }
         .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
+        .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
+        .compact-mode .dish-header-row { display: contents; }
+        .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
         
-        .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.95rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
-        .order-toggle-btn.on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
-        .order-toggle-btn.off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
-
+        /* 改修箇所: 陳列順ボタンのデザインとリセットボタン */
+        .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
+        .order-on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
+        .order-off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
+        .btn-reset-list { width: auto; padding: 6px 12px; font-size: 0.75rem; background: linear-gradient(#78909c, #455a64); margin-top: 8px; }
         .order-def { font-size: 0.75rem; color: #555; margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 12px; line-height: 1.5; }
     </style>
 </head>
@@ -162,8 +166,9 @@
     <div class="card glossy-card" id="shoppingListCard">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h2 style="margin:0;">🛒 買い物リスト</h2>
-            <button class="order-toggle-btn on" id="orderToggle" onclick="toggleOrder()">陳列順: ON</button>
+            <button class="order-toggle-btn order-on" id="orderToggle" onclick="toggleOrder()">陳列順: ON</button>
         </div>
+        <button class="btn-reset-list" onclick="resetShoppingCheck()">購入済みリセット</button>
         <ul id="shoppingListBody"></ul>
         <div class="order-def" id="orderDef">
             <b>【陳列順の定義】</b><br>
@@ -171,9 +176,8 @@
         </div>
         <div class="btn-row">
             <button class="btn-save" onclick="copyText('shoppingListBody')">テキストコピー</button>
-            <button class="btn-load" onclick="resetChecks()">全リセット</button>
+            <button class="btn-image" onclick="saveAsImage('shoppingListCard', '買い物リスト')">画像保存</button>
         </div>
-        <button class="btn-image" onclick="saveAsImage('shoppingListCard', '買い物リスト')">画像保存</button>
     </div>
 
     <script>
@@ -184,7 +188,7 @@
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
         let isOrderOn = true;
-        let checkedItems = new Set(); // チェック状態を保持
+        let checkedItems = new Set(); // チェック状態を保持するSet
 
         const CATEGORY_ORDER = { "野菜・果物": 0, "肉": 1, "魚": 2, "乳製品・豆腐・納豆": 3, "冷凍・加工食品": 4, "調味料・その他": 5 };
         const KEYWORDS = {
@@ -205,26 +209,22 @@
             isOrderOn = !isOrderOn;
             const btn = document.getElementById('orderToggle');
             btn.innerText = `陳列順: ${isOrderOn ? 'ON' : 'OFF'}`;
-            btn.className = `order-toggle-btn ${isOrderOn ? 'on' : 'off'}`;
+            btn.className = `order-toggle-btn ${isOrderOn ? 'order-on' : 'order-off'}`;
             document.getElementById('orderDef').style.display = isOrderOn ? 'block' : 'none';
             updateShoppingList();
         }
 
-        function toggleCheck(ing, el) {
-            if (checkedItems.has(ing)) {
-                checkedItems.delete(ing);
-                el.classList.remove('checked');
-            } else {
-                checkedItems.add(ing);
-                el.classList.add('checked');
-            }
-        }
-
-        function resetChecks() {
-            if (confirm("購入済みチェックを本当にリセットしますか？")) {
+        function resetShoppingCheck() {
+            if (confirm("購入済みのチェックをすべてリセットしますか？")) {
                 checkedItems.clear();
                 updateShoppingList();
             }
+        }
+
+        function toggleItemCheck(ing) {
+            if (checkedItems.has(ing)) checkedItems.delete(ing);
+            else checkedItems.add(ing);
+            updateShoppingList();
         }
 
         let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
@@ -405,9 +405,9 @@
             let currentCat = "", html = "";
             listArr.forEach(ing => {
                 const cat = getCategory(ing);
-                if (isOrderOn && cat !== currentCat) { html += `<li style="background:#fefefe; font-size:0.7rem; color:#888; padding:4px 12px; border-radius:0; box-shadow:none; border-bottom:1px solid #eee; cursor:default;" onclick="event.stopPropagation()">【${cat}】</li>`; currentCat = cat; }
                 const isChecked = checkedItems.has(ing);
-                html += `<li class="${isChecked ? 'checked' : ''}" onclick="toggleCheck('${ing}', this)"><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px" onclick="event.stopPropagation()">🛒</a></div></li>`;
+                if (isOrderOn && cat !== currentCat) { html += `<li style="background:#fefefe; font-size:0.7rem; color:#888; padding:4px 12px; border-radius:0; box-shadow:none; border-bottom:1px solid #eee; cursor:default;" onclick="event.stopPropagation()">【${cat}】</li>`; currentCat = cat; }
+                html += `<li class="${isChecked?'checked':''}" onclick="toggleItemCheck('${ing}')"><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px" onclick="event.stopPropagation()">🛒</a></div></li>`;
             });
             document.getElementById('shoppingListBody').innerHTML = html;
         }
