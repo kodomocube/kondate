@@ -164,8 +164,10 @@
         const STORAGE_KEY_DATA = 'Kondate_V46_Data';
         const STORAGE_KEY_PROFILES = 'Kondate_V46_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
+        const GITHUB_JSON_URL = "https://raw.githubusercontent.com/kodomocube/kondate/main/sample.json";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
+        // HTML内のバックアップ（GitHubから読み込めない時の用）
         const MASTER_SAMPLE = {
             mains: [{name:"カレー",ing:["豚肉","玉ねぎ","人参"]},{name:"ハンバーグ",ing:["合挽肉","玉ねぎ"]},{name:"唐揚げ",ing:["鶏もも肉","生姜"]},{name:"鯖の味噌煮",ing:["鯖","味噌"]},{name:"生姜焼き",ing:["豚肉","玉ねぎ"]},{name:"肉じゃが",ing:["牛肉","じゃがいも"]},{name:"麻婆豆腐",ing:["豆腐","豚挽肉"]},{name:"野菜炒め",ing:["豚肉","キャベツ"]},{name:"親子丼",ing:["鶏肉","卵","玉ねぎ"]},{name:"とんかつ",ing:["豚ロース肉"]},{name:"餃子",ing:["豚挽肉","白菜","ニラ"]},{name:"鮭のムニエル",ing:["鮭"]},{name:"筑前煮",ing:["鶏肉","ごぼう","蓮根"]},{name:"オムライス",ing:["卵","鶏肉","玉ねぎ"]},{name:"牛丼",ing:["牛肉","玉ねぎ"]},{name:"焼きそば",ing:["豚肉","キャベツ","麺"]},{name:"グラタン",ing:["マカロニ","鶏肉","牛乳"]},{name:"クリームシチュー",ing:["鶏肉","じゃがいも"]},{name:"照り焼きチキン",ing:["鶏もも肉"]},{name:"焼売",ing:["豚挽肉","玉ねぎ"]}],
             sides: [{name:"ポテトサラダ",ing:["じゃがいも","きゅうり"]},{name:"ほうれん草お浸し",ing:["ほうれん草"]},{name:"冷奴",ing:["豆腐","ねぎ"]},{name:"味噌汁",ing:["豆腐","わかめ"]},{name:"きんぴらごぼう",ing:["ごぼう","人参"]},{name:"ひじき煮",ing:["ひじき","大豆"]},{name:"切り干し大根",ing:["切り干し大根"]},{name:"ナムル",ing:["もやし","ほうれん草"]},{name:"きゅうりの酢の物",ing:["きゅうり","わかめ"]},{name:"だし巻き卵",ing:["卵"]},{name:"ブロッコリーサラダ",ing:["ブロッコリー"]},{name:"マカロニサラダ",ing:["マカロニ"]},{name:"浅漬け",ing:["白菜","きゅうり"]},{name:"茄子の揚げ浸し",ing:["茄子"]},{name:"かぼちゃの煮物",ing:["かぼちゃ"]},{name:"コールスロー",ing:["キャベツ"]},{name:"茶碗蒸し",ing:["卵","鶏肉"]},{name:"胡麻和え",ing:["いんげん"]},{name:"トマトサラダ",ing:["トマト"]},{name:"豚汁",ing:["豚肉","大根","人参"]}],
@@ -175,18 +177,40 @@
         let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
         let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || JSON.parse(JSON.stringify(MASTER_SAMPLE));
 
-        function init() {
-            ensureSampleExists();
+        async function init() {
+            await syncSampleFromGitHub();
             updateProfileSelect();
             renderAll();
             renderTable();
             updateModeLabel('side1'); updateModeLabel('side2');
         }
 
-        function ensureSampleExists() {
+        async function syncSampleFromGitHub() {
+            try {
+                const response = await fetch(GITHUB_JSON_URL);
+                if (!response.ok) throw new Error("GitHub fetch failed");
+                const githubData = await response.json();
+                
+                // GitHubのデータで「サンプル(定番)」を強制上書き
+                profiles[SAMPLE_KEY] = githubData;
+                localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
+                console.log("Sample synced from GitHub.");
+
+                // もし現在のデータが空、または「サンプル」を読み込んでいる状態なら最新化
+                if (!data.mains || data.mains.length === 0) {
+                    data = JSON.parse(JSON.stringify(githubData));
+                    saveToLocal();
+                }
+            } catch (e) {
+                console.warn("GitHub sync failed, using internal backup.", e);
+                ensureLocalSampleBackup();
+            }
+        }
+
+        function ensureLocalSampleBackup() {
             profiles[SAMPLE_KEY] = JSON.parse(JSON.stringify(MASTER_SAMPLE));
             localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
-            if (data.mains.length === 0 && data.sides.length === 0) {
+            if (!data.mains || data.mains.length === 0) {
                 data = JSON.parse(JSON.stringify(MASTER_SAMPLE));
                 saveToLocal();
             }
@@ -236,4 +260,262 @@
 
         function updateSelectors() {
             const allIng = [...new Set([...data.mains.flatMap(d => d.ing), ...data.sides.flatMap(d => d.ing)])].sort();
-            const allNames = [...data.mains.
+            const allNames = [...data.mains.map(d => d.name), ...data.sides.map(d => d.name)].sort();
+            document.getElementById('inventorySelect').innerHTML = allIng.map(i => `<option value="${i}">${i}</option>`).join('');
+            document.getElementById('excludeSelect').innerHTML = allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+            document.getElementById('wantToEatSelect').innerHTML = allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+        }
+
+        function renderTable() {
+            let html = "";
+            DAYS.forEach((day, i) => {
+                const p = data.currentPlan[i];
+                const mDish = data.mains.find(d => d.name === p.main) || {name:"", ing:[]};
+                const s1Dish = data.sides.find(d => d.name === p.side1) || {name:"", ing:[]};
+                const s2Dish = data.sides.find(d => d.name === p.side2) || {name:"", ing:[]};
+                html += `<tr class="day-row">
+                    <th class="day-header">${day}</th>
+                    <td class="menu-content">
+                        ${renderRow(i, 'main', '主菜', 'label-main', p.main, mDish.ing)}
+                        ${renderRow(i, 'side1', '副菜1', 'label-side1', p.side1, s1Dish.ing)}
+                        ${renderRow(i, 'side2', '副菜2', 'label-side2', p.side2, s2Dish.ing)}
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('planBody').innerHTML = html;
+            updateShoppingList();
+        }
+
+        function renderRow(dayIdx, type, label, labelClass, currentName, ingList) {
+            const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
+            const pool = type === 'main' ? data.mains : data.sides;
+            const recipeUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodeURIComponent(currentName)}/` : null;
+            
+            return `
+                <div class="dish-section">
+                    <div class="dish-header-row">
+                        <span class="dish-type-label ${labelClass}">${label}</span>
+                        <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定中':'固定'}</span>
+                        <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
+                            <option value="">未設定</option>
+                            ${pool.map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
+                        </select>
+                        ${recipeUrl ? `<a href="${recipeUrl}" target="_blank" class="search-link" title="レシピ検索">🔍</a>` : ''}
+                    </div>
+                    <small class="ing-text">${ingList.join(',')}</small>
+                </div>`;
+        }
+
+        function toggleFix(i, type) { 
+            data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed'];
+            renderTable(); saveToLocal(); 
+        }
+
+        function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
+
+        function generatePlan() {
+            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+            const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
+            const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
+            const prio = document.getElementById('priorityMode').checked;
+
+            let mPool = shuffle([...data.mains]).filter(d => !exc.includes(d.name));
+            let usedMains = data.currentPlan.filter(p => p.mainFixed && p.main).map(p => p.main);
+            DAYS.forEach((_, i) => {
+                if (!data.currentPlan[i].mainFixed) {
+                    const m = pickDish(mPool.filter(d => !usedMains.includes(d.name)), want, inv, prio);
+                    data.currentPlan[i].main = m.name;
+                    if(m.name) usedMains.push(m.name);
+                }
+            });
+
+            let usedSidesTotal = data.currentPlan.flatMap(p => [
+                p.side1Fixed ? p.side1 : null,
+                p.side2Fixed ? p.side2 : null
+            ]).filter(n => n);
+
+            let side1Batch = "";
+            const isBatch1 = document.getElementById('side1BatchMode').checked;
+            DAYS.forEach((_, i) => {
+                if (!data.currentPlan[i].side1Fixed) {
+                    if (isBatch1) {
+                        if (i % 3 === 0) {
+                            let s1Pool = shuffle([...data.sides]).filter(d => !exc.includes(d.name) && !usedSidesTotal.includes(d.name));
+                            side1Batch = pickDish(s1Pool, want, inv, prio).name;
+                            if(side1Batch) usedSidesTotal.push(side1Batch);
+                        }
+                        data.currentPlan[i].side1 = side1Batch;
+                    } else {
+                        let s1Pool = shuffle([...data.sides]).filter(d => !exc.includes(d.name) && !usedSidesTotal.includes(d.name));
+                        const d = pickDish(s1Pool, want, inv, prio);
+                        data.currentPlan[i].side1 = d.name;
+                        if(d.name) usedSidesTotal.push(d.name);
+                    }
+                }
+            });
+
+            let side2Batch = "";
+            const isBatch2 = document.getElementById('side2BatchMode').checked;
+            DAYS.forEach((_, i) => {
+                if (!data.currentPlan[i].side2Fixed) {
+                    if (isBatch2) {
+                        if (i % 3 === 0) {
+                            let todaySide1 = data.currentPlan[i].side1;
+                            let s2Pool = shuffle([...data.sides]).filter(d => !exc.includes(d.name) && d.name !== todaySide1 && !usedSidesTotal.includes(d.name));
+                            side2Batch = pickDish(s2Pool, want, inv, prio).name;
+                            if(side2Batch) usedSidesTotal.push(side2Batch);
+                        }
+                        data.currentPlan[i].side2 = side2Batch;
+                    } else {
+                        let todaySide1 = data.currentPlan[i].side1;
+                        let s2Pool = shuffle([...data.sides]).filter(d => !exc.includes(d.name) && d.name !== todaySide1 && !usedSidesTotal.includes(d.name));
+                        const d = pickDish(s2Pool, want, inv, prio);
+                        data.currentPlan[i].side2 = d.name;
+                        if(d.name) usedSidesTotal.push(d.name);
+                    }
+                }
+            });
+
+            renderTable(); saveToLocal();
+        }
+
+        function pickDish(pool, want, inv, prio) {
+            if (!pool.length) return {name:"", ing:[]};
+            let f = pool.filter(d => want.includes(d.name));
+            if (!f.length && prio) f = pool.filter(d => d.ing.some(i => inv.includes(i)));
+            return (f.length ? f : pool)[0];
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function updateShoppingList() {
+            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+            let ings = new Set();
+            data.currentPlan.forEach(p => {
+                [p.main, p.side1, p.side2].forEach(name => {
+                    const dish = [...data.mains, ...data.sides].find(d => d.name === name);
+                    if(dish) dish.ing.forEach(i => ings.add(i));
+                });
+            });
+            
+            document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => {
+                const searchUrl = `https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}`;
+                return `<li>
+                    <span>${ing}</span>
+                    ${inv.includes(ing) ? '<span class="batch-tag">在庫あり</span>' : ''}
+                    <a href="${searchUrl}" target="_blank" class="search-link" title="西友で検索">🔍</a>
+                </li>`;
+            }).join('');
+        }
+
+        function updateProfileSelect() {
+            const select = document.getElementById('profileSelect');
+            let options = `<option value="${SAMPLE_KEY}">${SAMPLE_KEY}</option>`;
+            Object.keys(profiles).forEach(name => { if (name !== SAMPLE_KEY) options += `<option value="${name}">${name}</option>`; });
+            select.innerHTML = options;
+        }
+
+        function saveProfile() {
+            const n = document.getElementById('profileName').value.trim();
+            if (n && n !== SAMPLE_KEY) { 
+                profiles[n] = JSON.parse(JSON.stringify(data)); 
+                localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); 
+                updateProfileSelect(); alert("保存しました"); 
+            }
+        }
+
+        function loadProfile() {
+            const n = document.getElementById('profileSelect').value;
+            data = JSON.parse(JSON.stringify(profiles[n] || MASTER_SAMPLE));
+            renderAll(); renderTable();
+        }
+
+        function deleteProfile() {
+            const n = document.getElementById('profileSelect').value;
+            if (n === SAMPLE_KEY) return alert("サンプルは削除不可");
+            if (confirm(n + " 削除しますか？")) { 
+                delete profiles[n]; 
+                localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); 
+                updateProfileSelect(); 
+            }
+        }
+
+        function exportCSV() {
+            let csv = "Type,Name,Ingredients\n";
+            data.mains.forEach(d => csv += `main,"${d.name}","${d.ing.join(',')}"\n`);
+            data.sides.forEach(d => csv += `side,"${d.name}","${d.ing.join(',')}"\n`);
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click();
+        }
+
+        function importCSV(input) {
+            const file = input.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split(/\r?\n/);
+                const newMains = []; const newSides = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (row.length < 3) continue;
+                    const type = row[0].trim();
+                    const name = row[1].replace(/"/g, '').trim();
+                    const ing = row[2].replace(/"/g, '').split(',').map(s => s.trim()).filter(s => s);
+                    if (type === 'main') newMains.push({ name, ing });
+                    else if (type === 'side') newSides.push({ name, ing });
+                }
+                if (newMains.length || newSides.length) {
+                    if (confirm(`読み込みますか？`)) {
+                        data.mains = newMains; data.sides = newSides;
+                        renderAll(); renderTable();
+                    }
+                }
+                input.value = "";
+            };
+            reader.readAsText(file);
+        }
+
+        function clearUnfixed() {
+            data.currentPlan.forEach(p => { 
+                if(!p.mainFixed) p.main = ""; 
+                if(!p.side1Fixed) p.side1 = ""; 
+                if(!p.side2Fixed) p.side2 = ""; 
+            });
+            renderTable(); saveToLocal();
+        }
+
+        async function saveAsImage(id, name) {
+            const card = document.getElementById(id);
+            const links = card.querySelectorAll('.search-link');
+            links.forEach(l => l.style.display = 'none');
+            const canvas = await html2canvas(card, { scale: 2 });
+            links.forEach(l => l.style.display = 'inline-block');
+            const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
+        }
+
+        function copyText(id) {
+            let txt = "";
+            if (id === 'planBody') {
+                txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side1||'-'} / ${p.side2||'-'}`).join('\n');
+            } else if (id === 'shoppingListBody') {
+                txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => {
+                    let text = li.querySelector('span').innerText;
+                    if(li.querySelector('.batch-tag')) text += ' (在庫あり)';
+                    return text;
+                }).join('\n');
+            }
+            navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
+        }
+
+        function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
+
+        init();
+    </script>
+</body>
+</html>
