@@ -59,11 +59,11 @@
         .label-soup { background: var(--md-soup); }
         .fix-btn { font-size: 0.5rem; padding: 1px 3px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
         .fix-btn.fixed { background: #333; color: #fff; border-color: #333; }
-        .menu-select { flex-grow: 1; padding: 1px; font-size: 0.75rem; font-weight: bold; border: 1px solid #eee; background: #fff; max-width: 50%; }
+        .menu-select { flex-grow: 1; padding: 1px; font-size: 0.75rem; font-weight: bold; border: 1px solid #eee; background: #fff; max-width: 45%; }
         .ing-text { font-size: 0.6rem; color: #666; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
         .batch-tag { font-size: 9px; background: #e3f2fd; color: #1565c0; padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
-        .search-link { text-decoration: none; font-size: 0.7rem; margin-left: 2px; background: #eee; padding: 0 3px; border-radius: 4px; color: #333; border: 1px solid #ccc; display: inline-block; }
+        .search-link { text-decoration: none; font-size: 0.65rem; margin-left: 2px; background: #eee; padding: 0 3px; border-radius: 4px; color: #333; border: 1px solid #ccc; display: inline-block; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -260,7 +260,12 @@
             const currentName = p[type];
             const isFixed = p[type + 'Fixed'];
             const dish = data[type + 's'].find(d => d.name === currentName) || {name:"", ing:[]};
-            const recipeUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodeURIComponent(currentName)}/` : null;
+            
+            // レシピURL生成
+            const encodedName = encodeURIComponent(currentName);
+            const rakutenUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodedName}/` : null;
+            const cookpadUrl = currentName ? `https://cookpad.com/search/${encodedName}` : null;
+
             return `<div class="dish-section">
                 <div class="dish-header-row">
                     <span class="dish-type-label ${labelClass}">${label}</span>
@@ -269,7 +274,8 @@
                         <option value="">未設定</option>
                         ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                     </select>
-                    ${recipeUrl ? `<a href="${recipeUrl}" target="_blank" class="search-link">🔍</a>` : ''}
+                    ${rakutenUrl ? `<a href="${rakutenUrl}" target="_blank" class="search-link">楽天</a>` : ''}
+                    ${cookpadUrl ? `<a href="${cookpadUrl}" target="_blank" class="search-link">クック</a>` : ''}
                 </div>
                 <small class="ing-text">${dish.ing.join(',')}</small>
             </div>`;
@@ -285,7 +291,6 @@
             const prio = document.getElementById('priorityMode').checked;
             const sideBatch = document.getElementById('sideBatchMode').checked;
 
-            // 主菜
             let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
             DAYS.forEach((_, i) => {
                 if(!data.currentPlan[i].mainFixed) {
@@ -294,7 +299,6 @@
                 }
             });
 
-            // 副菜（作り置き対応）
             let currentSide = "";
             let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
             DAYS.forEach((_, i) => {
@@ -312,7 +316,6 @@
                 }
             });
 
-            // サラダ & スープ
             ['salad', 'soup'].forEach(type => {
                 let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]);
                 DAYS.forEach((_, i) => {
