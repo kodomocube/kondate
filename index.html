@@ -78,18 +78,20 @@
         td.menu-content { padding: 8px; background: white; border-radius: 0 15px 15px 0; border: 2px solid #fff; }
         
         .dish-section { margin-bottom: 8px; padding: 8px; background: #fff9fb; border-radius: 15px; border: 1px solid #ffebee; }
-        .dish-header-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: nowrap; width: 100%; }
-        .dish-type-label { font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; color: white; box-shadow: inset 0 2px 4px rgba(255,255,255,0.4); flex-shrink: 0; text-align: center; min-width: 40px; }
+        /* 子要素がはみ出さないようにflex調整 */
+        .dish-header-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; width: 100%; }
+        
+        .dish-type-label { font-size: 0.6rem; font-weight: bold; padding: 2px 4px; border-radius: 20px; color: white; box-shadow: inset 0 2px 4px rgba(255,255,255,0.4); flex: 0 0 40px; text-align: center; }
         .label-main { background: #f06292; }
         .label-side { background: #ffb74d; }
         .label-salad { background: #aed581; }
         .label-soup { background: #9575cd; }
 
-        .fix-btn { font-size: 0.6rem; padding: 4px 8px; border-radius: 20px; border: 1px solid #ffc1e3; background: #fff; color: #f06292; font-weight: bold; min-width: 60px; flex-shrink: 0; cursor: pointer; }
+        .fix-btn { font-size: 0.6rem; padding: 4px 6px; border-radius: 20px; border: 1px solid #ffc1e3; background: #fff; color: #f06292; font-weight: bold; flex: 0 0 55px; text-align: center; cursor: pointer; }
         .fix-btn.fixed { background: #f06292; color: #fff; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
         
-        /* すべての種類で幅を統一し見切れを防止 */
-        .menu-select { flex: 1; min-width: 0; padding: 6px; font-size: 0.85rem; border: 1px solid #ffd1dc; border-radius: 10px; color: #880e4f; background: #fff; }
+        /* 文字が長くても見切れないようにwidth設定を解除 */
+        .menu-select { flex: 1; padding: 4px; font-size: 0.85rem; border: 1px solid #ffd1dc; border-radius: 10px; color: #880e4f; background: #fff; min-width: 0; }
         
         .search-link { text-decoration: none; font-size: 0.65rem; background: #fff; padding: 3px 8px; border-radius: 10px; color: #f06292; border: 1px solid #ffc1e3; font-weight: bold; white-space: nowrap; }
 
@@ -370,7 +372,7 @@
             return (f.length ? f : shuffled)[0];
         }
 
-        function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+        function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[j],a[i]]=[a[i],a[j]];} return a; }
 
         function updateShoppingList() {
             const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
