@@ -83,7 +83,6 @@
         .compact-mode .dish-header-row { display: contents; }
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
         
-        /* 改修箇所: 陳列順ボタンのデザインとリセットボタン */
         .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
         .order-on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
         .order-off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
@@ -168,6 +167,7 @@
             <h2 style="margin:0;">🛒 買い物リスト</h2>
             <button class="order-toggle-btn order-on" id="orderToggle" onclick="toggleOrder()">陳列順: ON</button>
         </div>
+        <p style="font-size: 0.75rem; color: #ff69b4; margin: 0 0 8px 4px; font-weight: bold;">※タップで購入済み(打ち消し線)にできます</p>
         <button class="btn-reset-list" onclick="resetShoppingCheck()">購入済みリセット</button>
         <ul id="shoppingListBody"></ul>
         <div class="order-def" id="orderDef">
@@ -188,7 +188,7 @@
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
 
         let isOrderOn = true;
-        let checkedItems = new Set(); // チェック状態を保持するSet
+        let checkedItems = new Set();
 
         const CATEGORY_ORDER = { "野菜・果物": 0, "肉": 1, "魚": 2, "乳製品・豆腐・納豆": 3, "冷凍・加工食品": 4, "調味料・その他": 5 };
         const KEYWORDS = {
@@ -215,7 +215,7 @@
         }
 
         function resetShoppingCheck() {
-            if (confirm("購入済みのチェックをすべてリセットしますか？")) {
+            if (confirm("購入済み(打ち消し線)のチェックをすべてリセットしますか？")) {
                 checkedItems.clear();
                 updateShoppingList();
             }
@@ -407,7 +407,7 @@
                 const cat = getCategory(ing);
                 const isChecked = checkedItems.has(ing);
                 if (isOrderOn && cat !== currentCat) { html += `<li style="background:#fefefe; font-size:0.7rem; color:#888; padding:4px 12px; border-radius:0; box-shadow:none; border-bottom:1px solid #eee; cursor:default;" onclick="event.stopPropagation()">【${cat}】</li>`; currentCat = cat; }
-                html += `<li class="${isChecked?'checked':''}" onclick="toggleItemCheck('${ing}')"><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px" onclick="event.stopPropagation()">🛒</a></div></li>`;
+                html += `<li class="${isChecked?'checked':''}" onclick="toggleItemCheck('${ing}')"><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px; font-size: 0.55rem;" onclick="event.stopPropagation()">楽天マートで見る</a></div></li>`;
             });
             document.getElementById('shoppingListBody').innerHTML = html;
         }
@@ -426,7 +426,7 @@
         function importCSV(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const lines = e.target.result.split(/\r?\n/); const newData = { mains:[], sides:[], salads:[], soups:[] }; for (let i = 1; i < lines.length; i++) { const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if (row.length < 3) continue; const t = row[0].trim().toLowerCase() + 's'; const name = row[1].replace(/"/g, '').trim(); const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s); if (newData[t]) newData[t].push({ name, ing }); } if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); } input.value = ""; }; reader.readAsText(file); }
         function clearUnfixed() { data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); }); renderTable(); saveToLocal(); }
         async function saveAsImage(id, name) { const card = document.getElementById(id); const links = card.querySelectorAll('.search-link'); const btns = card.querySelectorAll('button'); links.forEach(l => l.style.display = 'none'); btns.forEach(b => b.style.display = 'none'); const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true }); links.forEach(l => l.style.display = 'inline-block'); btns.forEach(b => b.style.display = 'block'); const link = document.createElement('a'); link.href = canvas.toDataURL("image/png"); link.download = `${name}.png`; link.click(); }
-        function copyText(id) { let txt = ""; if (id === 'planBody') { txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n'); } else if (id === 'shoppingListBody') { const lis = document.getElementById(id).querySelectorAll('li'); txt = Array.from(lis).map(li => li.innerText.replace('🛒', '').trim()).join('\n'); } navigator.clipboard.writeText(txt).then(() => alert("コピーしました")); }
+        function copyText(id) { let txt = ""; if (id === 'planBody') { txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n'); } else if (id === 'shoppingListBody') { const lis = document.getElementById(id).querySelectorAll('li'); txt = Array.from(lis).map(li => li.innerText.replace('楽天マートで見る', '').trim()).join('\n'); } navigator.clipboard.writeText(txt).then(() => alert("コピーしました")); }
         function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
         init();
     </script>
