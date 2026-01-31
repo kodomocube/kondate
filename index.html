@@ -8,94 +8,81 @@
     <style>
         :root {
             --md-primary: #2e7d32;
-            --md-surface: #f8faf8;
+            --md-surface: #f0f4ef;
             --md-secondary: #ef6c00;
+            --md-tertiary: #00796b;
             --md-salad: #c0ca33;
             --md-soup: #8d6e63;
             --md-error: #ba1a1a;
-            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--md-surface); color: #1a1c19; margin: 0; padding: 12px; padding-bottom: 60px; font-size: 14px; line-height: 1.4; }
+        body { font-family: sans-serif; background: var(--md-surface); color: #1a1c19; margin: 0; padding: 12px; padding-bottom: 60px; font-size: 14px; }
         .header-img-container { text-align: center; margin: 10px 0; }
         .header-img { width: 100%; max-width: 320px; border-radius: 16px; box-shadow: var(--shadow); }
-        .card { background: #fff; padding: 16px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid #edf2ed; }
+        .card { background: #fff; padding: 16px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
         h2 { font-size: 1rem; color: var(--md-primary); margin: 0; display: inline; }
         summary { cursor: pointer; outline: none; display: flex; align-items: center; border-left: 5px solid var(--md-primary); padding-left: 8px; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: ' ▼'; font-size: 0.7rem; color: #999; margin-left: auto; }
         details[open] summary::after { content: ' ▲'; }
-        
-        input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #e0e0e0; border-radius: 12px; font-size: 16px; box-sizing: border-box; background: #fff; }
-        select[multiple] { height: 120px; }
-        label { display: block; margin: 12px 0 6px 4px; font-weight: bold; color: #444; font-size: 0.85rem; }
-        
-        button { background: var(--md-primary); color: white; border: none; padding: 14px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 8px; transition: opacity 0.2s; }
-        button:active { opacity: 0.7; }
-        
-        .scroll-list { max-height: 200px; overflow-y: auto; border-radius: 12px; padding: 8px; background: #f1f3f1; margin-bottom: 12px; }
-        .list-item { background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .edit-area { flex-grow: 1; }
-        .dish-name-edit { font-weight: bold; display: block; margin-bottom: 2px; }
+        .details-content { margin-top: 12px; }
+        input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        select[multiple] { height: 100px; }
+        label { display: block; margin: 8px 0 4px 4px; font-weight: bold; color: #555; font-size: 0.85rem; }
+        button { background: var(--md-primary); color: white; border: none; padding: 14px; border-radius: 100px; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 8px; }
+        .scroll-list { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 12px; padding: 8px; background: #fafafa; margin-bottom: 12px; }
+        .list-item { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 4px solid var(--md-primary); }
+        .edit-area { flex-grow: 1; overflow: hidden; }
+        .dish-name-edit { font-weight: bold; display: block; border-bottom: 1px dashed #ddd; }
         .dish-ing-edit { font-size: 0.75rem; color: #666; }
-
-        .switch-group { background: #f1f5f1; padding: 12px; border-radius: 16px; margin: 12px 0; }
-        .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-weight: bold; }
+        .switch-group { background: #f9f9f9; padding: 10px; border-radius: 16px; margin: 10px 0; border: 1px solid #eee; }
+        .switch-container { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-weight: bold; border-bottom: 1px solid #eee; }
+        .switch-container:last-child { border-bottom: none; }
         .switch { position: relative; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; transition: .3s; border-radius: 22px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background: var(--md-primary); }
         input:checked + .slider:before { transform: translateX(22px); }
+        .mode-label { font-size: 0.75rem; color: #666; margin-right: 8px; }
 
-        /* 献立テーブル */
-        table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
-        th.day-header { width: 40px; background: var(--md-primary); color: white; padding: 12px 4px; text-align: center; font-size: 1rem; border-bottom: 1px solid #fff; }
-        td.menu-content { padding: 8px; border-bottom: 1px solid #eee; }
-        tr:last-child td { border-bottom: none; }
-
-        .dish-section { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f5f5f5; }
-        .dish-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        
-        /* 料理名見切れ防止レイアウト */
-        .dish-header-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
-        .dish-type-label { font-size: 0.6rem; font-weight: bold; padding: 2px 6px; border-radius: 6px; color: white; min-width: 38px; text-align: center; }
+        /* 献立テーブルデザイン改善 */
+        table { width: 100%; border-collapse: collapse; background: white; border: 2px solid #ddd; table-layout: fixed; }
+        tr.day-row { border-bottom: 4px solid #ccc; }
+        th.day-header { width: 32px; background: #2e7d32; color: white; padding: 8px 2px; text-align: center; border-right: 1px solid #ddd; font-size: 0.9rem; }
+        td.menu-content { padding: 4px; }
+        .dish-section { margin-bottom: 6px; padding: 4px; background: #fcfcfc; border-radius: 8px; border: 1px solid #f0f0f0; }
+        .dish-header-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
+        .dish-type-label { font-size: 0.55rem; font-weight: bold; padding: 2px 4px; border-radius: 4px; color: white; min-width: 35px; text-align: center; }
         .label-main { background: var(--md-primary); }
         .label-side { background: var(--md-secondary); }
         .label-salad { background: var(--md-salad); }
         .label-soup { background: var(--md-soup); }
-        
-        .fix-btn { font-size: 0.65rem; padding: 3px 6px; border-radius: 6px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
-        .fix-btn.fixed { background: #444; color: #fff; border-color: #444; }
-        
-        .menu-select { flex: 1 1 100%; min-width: 150px; padding: 6px; font-size: 0.9rem; font-weight: bold; border-radius: 8px; border: 1px solid #eee; background: #fafafa; }
-        
-        .link-group { display: flex; gap: 4px; width: 100%; margin-top: 2px; }
-        .search-link { flex: 1; text-decoration: none; font-size: 0.65rem; text-align: center; background: #fff; padding: 4px 0; border-radius: 6px; color: #555; border: 1px solid #ddd; font-weight: 500; }
-        .search-link:active { background: #eee; }
+        .fix-btn { font-size: 0.55rem; padding: 2px 4px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
+        .fix-btn.fixed { background: #333; color: #fff; border-color: #333; }
+        .menu-select { flex-grow: 1; padding: 2px; font-size: 0.8rem; font-weight: bold; border: 1px solid #ddd; background: #fff; border-radius: 4px; width: 100%; min-width: 0; }
+        .recipe-links-row { display: flex; gap: 4px; margin-top: 2px; }
+        .search-link { text-decoration: none; font-size: 0.6rem; background: #fff; padding: 1px 5px; border-radius: 4px; color: #555; border: 1px solid #ccc; display: inline-block; }
+        .ing-text { font-size: 0.6rem; color: #888; display: block; margin-top: 2px; line-height: 1.2; word-break: break-all; }
 
-        .ing-text { font-size: 0.7rem; color: #888; display: block; margin-top: 4px; line-height: 1.2; word-break: break-all; }
-        
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-        .batch-tag { font-size: 10px; background: #e3f2fd; color: #1565c0; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-weight: normal; }
-
-        #shoppingListBody { padding: 0; list-style: none; }
-        #shoppingListBody li { padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        .batch-tag { font-size: 9px; background: #e3f2fd; color: #1565c0; padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
     </style>
 </head>
 <body>
 
     <div class="header-img-container"><img src="title.jpg" alt="Kodomo Cube" class="header-img"></div>
-    <h1 style="text-align:center; color:var(--md-primary); font-size:1.3rem; margin:10px 0;">献立＆買い物リスト</h1>
+    <h1 style="text-align:center; color:var(--md-primary); font-size:1.4rem; margin:10px 0;">🍴 献立＆買い物リストメーカー</h1>
 
     <div class="card">
         <details><summary><h2>データの管理</h2></summary>
-            <div class="details-content" style="margin-top:12px;">
+            <div class="details-content">
                 <select id="profileSelect"></select>
                 <div class="btn-row">
                     <button onclick="loadProfile()" style="background:#78909c">読み込む</button>
                     <button onclick="deleteProfile()" style="background:var(--md-error)">削除</button>
                 </div>
-                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
                 <input type="text" id="profileName" placeholder="新規保存名">
                 <button onclick="saveProfile()" style="background:#006495">保存</button>
                 <div class="btn-row">
@@ -109,61 +96,49 @@
 
     <div class="card">
         <details><summary><h2>料理の登録</h2></summary>
-            <div class="details-content" style="margin-top:12px;">
-                <input type="text" id="addName" placeholder="料理名">
-                <input type="text" id="addIng" placeholder="材料 (例: 豚肉/キャベツ)">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;">
+            <div class="details-content">
+                <div class="btn-row"><input type="text" id="addName" placeholder="料理名"><input type="text" id="addIng" placeholder="材料"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:8px;">
                     <button onclick="addDish('main')">主菜追加</button>
                     <button onclick="addDish('side')" style="background:var(--md-secondary)">副菜追加</button>
                     <button onclick="addDish('salad')" style="background:var(--md-salad)">サラダ追加</button>
                     <button onclick="addDish('soup')" style="background:var(--md-soup)">スープ追加</button>
                 </div>
-                <label>登録済みリスト</label>
-                <div id="mainListDisplay" class="scroll-list"></div>
-                <div id="sideListDisplay" class="scroll-list"></div>
-                <div id="saladListDisplay" class="scroll-list"></div>
-                <div id="soupListDisplay" class="scroll-list"></div>
+                <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
+                <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
+                <label>サラダ</label><div id="saladListDisplay" class="scroll-list"></div>
+                <label>スープ</label><div id="soupListDisplay" class="scroll-list"></div>
             </div>
         </details>
     </div>
 
     <div class="card">
         <h2>作成条件</h2>
-        <label>🏠 在庫にある食材</label>
-        <select id="inventorySelect" multiple></select>
-        
+        <label>🏠 在庫にある食材</label><select id="inventorySelect" multiple></select>
         <div class="switch-group">
-            <div class="switch-container">
-                <span>在庫食材を優先活用</span>
-                <label class="switch"><input type="checkbox" id="priorityMode" checked><span class="slider"></span></label>
-            </div>
-            <div class="switch-container">
-                <span>副菜: <span id="sideBatchModeLabel" style="color:var(--md-primary)">作り置きON</span></span>
-                <label class="switch"><input type="checkbox" id="sideBatchMode" checked onchange="updateModeLabel('side')"><span class="slider"></span></label>
-            </div>
+            <div class="switch-container"><span>在庫食材を優先活用</span><label class="switch"><input type="checkbox" id="priorityMode" checked><span class="slider"></span></label></div>
+            <div class="switch-container"><span>副菜: <span class="mode-label" id="sideBatchModeLabel">3日分作り置きON</span></span><label class="switch"><input type="checkbox" id="sideBatchMode" checked onchange="updateModeLabel('side')"><span class="slider"></span></label></div>
         </div>
-
         <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
         <label>⭐ 食べたい料理</label><select id="wantToEatSelect" multiple></select>
-        
-        <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px; box-shadow: 0 4px 12px rgba(46,125,50,0.3);">献立を自動作成</button>
+        <button onclick="generatePlan()" style="height:60px; font-size:1.1rem; margin-top:10px;">献立を自動作成</button>
     </div>
 
     <div class="card" id="planCard">
-        <h2 style="display:block; margin-bottom:12px;">📅 今週の献立</h2>
+        <h2>📅 今週の献立</h2>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
             <button onclick="clearUnfixed()" style="background:#78909c">固定以外クリア</button>
             <button onclick="copyText('planBody')" style="background:#546e7a">テキストコピー</button>
         </div>
-        <button onclick="saveAsImage('planCard', '今週の献立')" style="background:#4527a0; margin-top:8px;">画像として保存</button>
+        <button onclick="saveAsImage('planCard', '今週の献立')" style="background:#4527a0; margin-top:8px;">画像保存</button>
     </div>
 
     <div class="card" id="shoppingListCard">
         <h2>🛒 買い物リスト</h2>
         <ul id="shoppingListBody"></ul>
         <div class="btn-row">
-            <button onclick="copyText('shoppingListBody')" style="background:#546e7a">コピー</button>
+            <button onclick="copyText('shoppingListBody')" style="background:#546e7a">テキストコピー</button>
             <button onclick="saveAsImage('shoppingListCard', '買い物リスト')" style="background:#4527a0">画像保存</button>
         </div>
     </div>
@@ -218,7 +193,7 @@
 
         function updateModeLabel(key) {
             const isBatch = document.getElementById(key + 'BatchMode').checked;
-            document.getElementById(key + 'ModeLabel').innerText = isBatch ? "作り置きON" : "作り置きOFF";
+            document.getElementById(key + 'ModeLabel').innerText = isBatch ? "3日分作り置きON" : "3日分作り置きOFF";
             document.getElementById(key + 'ModeLabel').style.color = isBatch ? "var(--md-primary)" : "#666";
         }
 
@@ -231,28 +206,26 @@
         function renderFullList(type) {
             const list = data[type + 's'];
             const container = document.getElementById(type + 'ListDisplay');
-            if(list.length === 0) { container.style.display = 'none'; return; }
-            container.style.display = 'block';
             container.innerHTML = list.map((d, i) => `
                 <div class="list-item">
                     <div class="edit-area">
                         <span class="dish-name-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'name',this)">${d.name}</span>
                         <span class="dish-ing-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'ing',this)">${d.ing.join('、')}</span>
                     </div>
-                    <span style="color:red; cursor:pointer; padding: 4px;" onclick="deleteDish('${type}',${i})">✕</span>
+                    <span style="color:red; cursor:pointer;" onclick="deleteDish('${type}',${i})">✕</span>
                 </div>`).join('');
         }
 
         function updateDishData(t, i, f, el) {
             const val = el.innerText.trim();
             if (f === 'name') data[t + 's'][i].name = val;
-            else data[t + 's'][i].ing = val.split(/[、,／/]+/).map(s => s.trim());
+            else data[t + 's'][i].ing = val.split(/[、,]+/).map(s => s.trim());
             renderAll(); renderTable();
         }
 
         function addDish(t) {
             const n = document.getElementById('addName').value.trim();
-            const g = document.getElementById('addIng').value.split(/[、,／/]+/).map(s => s.trim()).filter(s => s);
+            const g = document.getElementById('addIng').value.split(/[、,]+/).map(s => s.trim()).filter(s => s);
             if (n) { data[t + 's'].push({ name: n, ing: g }); renderAll(); renderTable(); }
             document.getElementById('addName').value = ''; document.getElementById('addIng').value = '';
         }
@@ -270,6 +243,7 @@
         function renderTable() {
             let html = "";
             DAYS.forEach((day, i) => {
+                const p = data.currentPlan[i];
                 html += `<tr class="day-row">
                     <th class="day-header">${day}</th>
                     <td class="menu-content">
@@ -294,17 +268,18 @@
             const rakutenUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodedName}/` : null;
             const cookpadUrl = currentName ? `https://cookpad.com/search/${encodedName}` : null;
 
-            return `<div class="dish-section">
+            return `
+            <div class="dish-section">
                 <div class="dish-header-row">
                     <span class="dish-type-label ${labelClass}">${label}</span>
-                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定済':'固定'}</span>
+                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固':'定'}</span>
                     <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
                         <option value="">未設定</option>
                         ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                     </select>
                 </div>
-                ${rakutenUrl ? `
-                <div class="link-group">
+                ${currentName ? `
+                <div class="recipe-links-row">
                     <a href="${rakutenUrl}" target="_blank" class="search-link">楽天レシピ</a>
                     <a href="${cookpadUrl}" target="_blank" class="search-link">クックパッド</a>
                 </div>` : ''}
@@ -312,4 +287,159 @@
             </div>`;
         }
 
-        function toggleFix(i, type) { data.currentPlan[i][type +
+        function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
+        function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
+
+        function generatePlan() {
+            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+            const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
+            const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
+            const prio = document.getElementById('priorityMode').checked;
+            const sideBatch = document.getElementById('sideBatchMode').checked;
+
+            let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
+            DAYS.forEach((_, i) => {
+                if(!data.currentPlan[i].mainFixed) {
+                    const d = pickDish(data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name)), want, inv, prio);
+                    data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name);
+                }
+            });
+
+            let currentSide = "";
+            let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
+            DAYS.forEach((_, i) => {
+                if(!data.currentPlan[i].sideFixed) {
+                    if(sideBatch) {
+                        if(i%3===0) {
+                            const d = pickDish(data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)), want, inv, prio);
+                            currentSide = d.name; if(d.name) usedS.push(d.name);
+                        }
+                        data.currentPlan[i].side = currentSide;
+                    } else {
+                        const d = pickDish(data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)), want, inv, prio);
+                        data.currentPlan[i].side = d.name; if(d.name) usedS.push(d.name);
+                    }
+                }
+            });
+
+            ['salad', 'soup'].forEach(type => {
+                let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]);
+                DAYS.forEach((_, i) => {
+                    if(!data.currentPlan[i][type+'Fixed']) {
+                        const d = pickDish(data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name)), want, inv, prio);
+                        data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name);
+                    }
+                });
+            });
+
+            renderTable(); saveToLocal();
+        }
+
+        function pickDish(pool, want, inv, prio) {
+            if (!pool.length) return {name:"", ing:[]};
+            let shuffled = shuffle([...pool]);
+            let f = shuffled.filter(d => want.includes(d.name));
+            if (!f.length && prio) f = shuffled.filter(d => d.ing.some(i => inv.includes(i)));
+            return (f.length ? f : shuffled)[0];
+        }
+
+        function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+        function updateShoppingList() {
+            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+            let ings = new Set();
+            data.currentPlan.forEach(p => {
+                ['main', 'side', 'salad', 'soup'].forEach(t => {
+                    const d = data[t+'s'].find(x => x.name === p[t]);
+                    if(d) d.ing.forEach(ing => ings.add(ing));
+                });
+            });
+            document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => `
+                <li><span>${ing}</span>${inv.includes(ing)?'<span class="batch-tag">在庫あり</span>':''}
+                <a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link">🛒</a></li>`).join('');
+        }
+
+        function updateProfileSelect() {
+            const select = document.getElementById('profileSelect');
+            let options = `<option value="${SAMPLE_KEY}">${SAMPLE_KEY}</option>`;
+            Object.keys(profiles).forEach(name => { if (name !== SAMPLE_KEY) options += `<option value="${name}">${name}</option>`; });
+            select.innerHTML = options;
+        }
+
+        function saveProfile() {
+            const n = document.getElementById('profileName').value.trim();
+            if (n && n !== SAMPLE_KEY) { profiles[n] = JSON.parse(JSON.stringify(data)); localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); alert("保存しました"); }
+        }
+
+        function loadProfile() {
+            const n = document.getElementById('profileSelect').value;
+            data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) }));
+            renderAll(); renderTable();
+        }
+
+        function deleteProfile() {
+            const n = document.getElementById('profileSelect').value;
+            if (n === SAMPLE_KEY) return alert("サンプルは削除不可");
+            if (confirm(n + " 削除しますか？")) { delete profiles[n]; localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); }
+        }
+
+        function exportCSV() {
+            let csv = "Type,Name,Ingredients\n";
+            ['main', 'side', 'salad', 'soup'].forEach(t => data[t+'s'].forEach(d => csv += `${t},"${d.name}","${d.ing.join('/')}"\n`));
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click();
+        }
+
+        function importCSV(input) {
+            const file = input.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split(/\r?\n/);
+                const newData = { mains:[], sides:[], salads:[], soups:[] };
+                for (let i = 1; i < lines.length; i++) {
+                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (row.length < 3) continue;
+                    const t = row[0].trim().toLowerCase() + 's';
+                    const name = row[1].replace(/"/g, '').trim();
+                    const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s);
+                    if (newData[t]) newData[t].push({ name, ing });
+                }
+                if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); }
+                input.value = "";
+            };
+            reader.readAsText(file);
+        }
+
+        function clearUnfixed() {
+            data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); });
+            renderTable(); saveToLocal();
+        }
+
+        async function saveAsImage(id, name) {
+            const card = document.getElementById(id);
+            const links = card.querySelectorAll('.search-link');
+            links.forEach(l => l.style.display = 'none');
+            const canvas = await html2canvas(card, { scale: 2 });
+            links.forEach(l => l.style.display = 'inline-block');
+            const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
+        }
+
+        function copyText(id) {
+            let txt = "";
+            if (id === 'planBody') {
+                txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n');
+            } else if (id === 'shoppingListBody') {
+                txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => {
+                    let text = li.querySelector('span').innerText;
+                    if(li.querySelector('.batch-tag')) text += ' (在庫あり)';
+                    return text;
+                }).join('\n');
+            }
+            navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
+        }
+
+        function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
+        init();
+    </script>
+</body>
+</html>
