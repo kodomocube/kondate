@@ -99,16 +99,17 @@
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* コンパクト表示用のスタイル */
-        .compact-mode .dish-section { margin-bottom: 4px; padding: 4px; border: none; background: transparent; }
+        /* コンパクト表示用のスタイル調整 */
+        .compact-mode .dish-section { margin-bottom: 0px; padding: 2px 4px; border: none; background: transparent; }
         .compact-mode .dish-header-row { margin-bottom: 0; gap: 4px; flex-wrap: nowrap; }
-        .compact-mode .menu-select { margin-top: 0; padding: 4px; font-size: 0.8rem; border-radius: 6px; flex: 1; }
+        .compact-mode .menu-select { margin-top: 0; padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; flex: 1; height: 26px; }
         .compact-mode .search-link, 
         .compact-mode .ing-text,
         .compact-mode .fix-btn:not(.fixed) { display: none !important; }
-        .compact-mode .fix-btn.fixed { min-width: 40px; font-size: 0.5rem; padding: 2px 4px; }
-        .compact-mode .dish-type-label { min-width: 20px; padding: 2px 4px; font-size: 0.5rem; }
-        .compact-mode td.menu-content { padding: 4px; }
+        .compact-mode .fix-btn.fixed { min-width: 32px; font-size: 0.5rem; padding: 2px; height: 18px; line-height: 14px; }
+        .compact-mode .dish-type-label { min-width: 18px; padding: 1px 3px; font-size: 0.5rem; }
+        .compact-mode td.menu-content { padding: 2px; }
+        .compact-mode .day-row { border-bottom: 1px solid #ffebee; }
 
         .toggle-compact-btn {
             width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0;
