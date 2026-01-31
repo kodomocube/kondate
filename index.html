@@ -35,7 +35,7 @@
         .btn-save { background: linear-gradient(#90caf9, #42a5f5); }
         .btn-csv { background: linear-gradient(#b0bec5, #78909c); }
         .btn-image { background: linear-gradient(#ff8aab, #f44336); }
-        .btn-line { background: linear-gradient(#06C755, #05b34c); } /* LINEカラー */
+        .btn-line { background: linear-gradient(#06C755, #05b34c); }
 
         .glossy-card { background: #ffffff !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4) !important; position: relative; }
 
@@ -160,7 +160,10 @@
             <button class="btn-load" onclick="clearUnfixed()">固定以外クリア</button>
             <button class="btn-save" onclick="copyText('planBody')">テキストコピー</button>
         </div>
-        <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')">画像保存</button>
+        <div class="btn-row">
+            <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')">画像保存</button>
+            <button class="btn-line" onclick="shareAsImage('planCard', '今週の献立')">画像をLINE等で送る</button>
+        </div>
     </div>
 
     <div class="card glossy-card" id="shoppingListCard">
@@ -445,22 +448,36 @@
             link.click();
         }
 
+        async function shareAsImage(id, name) {
+            const card = document.getElementById(id);
+            const links = card.querySelectorAll('.search-link');
+            const btns = card.querySelectorAll('button');
+            links.forEach(l => l.style.display = 'none');
+            btns.forEach(b => b.style.display = 'none');
+            try {
+                const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = new File([blob], `${name}.png`, { type: 'image/png' });
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: name });
+                } else {
+                    alert("お使いのブラウザは画像共有に対応していません。通常の画像保存をご利用ください。");
+                }
+            } catch (err) { console.error("Share failed:", err); } finally {
+                links.forEach(l => l.style.display = 'inline-block');
+                btns.forEach(b => b.style.display = 'block');
+            }
+        }
+
         function getShoppingText() {
             const lis = document.getElementById('shoppingListBody').querySelectorAll('li');
-            // 購入済み(打ち消し線)以外のアイテムだけを抽出
-            return Array.from(lis)
-                .filter(li => !li.classList.contains('checked') && !li.innerText.startsWith('【'))
-                .map(li => li.innerText.replace('楽天マートで見る', '').trim())
-                .join('\n');
+            return Array.from(lis).filter(li => !li.classList.contains('checked') && !li.innerText.startsWith('【')).map(li => li.innerText.replace('楽天マートで見る', '').trim()).join('\n');
         }
 
         function copyText(id) {
             let txt = "";
-            if (id === 'planBody') {
-                txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n');
-            } else if (id === 'shoppingListBody') {
-                txt = getShoppingText();
-            }
+            if (id === 'planBody') txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n');
+            else if (id === 'shoppingListBody') txt = getShoppingText();
             navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
         }
 
