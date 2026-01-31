@@ -36,8 +36,7 @@
         .btn-csv { background: linear-gradient(#b0bec5, #78909c); }
         .btn-image { background: linear-gradient(#ff8aab, #f44336); }
 
-        .glossy-card { background: linear-gradient(180deg, #ffffff 0%, #fff0f5 100%) !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4), inset 0 -5px 15px rgba(255, 255, 255, 0.8) !important; position: relative; }
-        .glossy-card::before { content: ""; position: absolute; top: 6px; left: 15%; width: 70%; height: 12px; background: rgba(255,255,255,0.7); border-radius: 50%; filter: blur(2px); pointer-events: none; }
+        .glossy-card { background: #ffffff !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4) !important; position: relative; }
 
         h2 { font-size: 1.1rem; color: #ff69b4; text-shadow: 1px 1px 0 #fff; }
         input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 2px solid #ffe0ea; border-radius: 20px; font-size: 16px; box-sizing: border-box; background: #fff; }
@@ -49,14 +48,14 @@
         .dish-section { margin-bottom: 12px; padding: 8px; background: #fff9fb; border-radius: 15px; border: 1px solid #ffebee; }
         .dish-header-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
         
-        .dish-type-label { font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; color: white; box-shadow: inset 0 2px 4px rgba(255,255,255,0.4); text-align: center; min-width: 40px; }
-        .label-main { background: #f06292; }
-        .label-side { background: #ffb74d; }
-        .label-salad { background: #aed581; }
-        .label-soup { background: #9575cd; }
+        .dish-type-label { font-size: 0.6rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; color: white; text-align: center; min-width: 40px; }
+        .label-main { background-color: #f06292; }
+        .label-side { background-color: #ffb74d; }
+        .label-salad { background-color: #aed581; }
+        .label-soup { background-color: #9575cd; }
 
         .fix-btn { font-size: 0.6rem; padding: 4px 10px; border-radius: 20px; border: 1px solid #ffc1e3; background: #fff; color: #f06292; font-weight: bold; min-width: 60px; text-align: center; cursor: pointer; }
-        .fix-btn.fixed { background: #f06292; color: #fff; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .fix-btn.fixed { background: #f06292; color: #fff; }
         
         .menu-select { width: 100% !important; flex: 0 0 100%; margin-top: 4px; padding: 8px; font-size: 0.9rem; border: 1px solid #ffd1dc; border-radius: 10px; color: #880e4f; background: #fff; box-sizing: border-box; }
         .search-link { text-decoration: none; font-size: 0.65rem; background: #fff; padding: 3px 8px; border-radius: 10px; color: #f06292; border: 1px solid #ffc1e3; font-weight: bold; white-space: nowrap; }
@@ -74,30 +73,31 @@
         .compact-mode .search-link,
         .compact-mode .ing-text { display: none !important; }
 
-        .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; }
-        .compact-mode th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; }
+        .compact-mode table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
+        .compact-mode th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
         
-        /* 曜日ごとの背景色 */
-        .compact-mode tr.day-row-0 th { background-color: #fdd835; } /* 月 */
-        .compact-mode tr.day-row-1 th { background-color: #ef5350; } /* 火 */
-        .compact-mode tr.day-row-2 th { background-color: #4fc3f7; } /* 水 */
-        .compact-mode tr.day-row-3 th { background-color: #81c784; } /* 木 */
-        .compact-mode tr.day-row-4 th { background-color: #f06292; } /* 金 */
-        .compact-mode tr.day-row-5 th { background-color: #5c6bc0; } /* 土 */
-        .compact-mode tr.day-row-6 th { background-color: #d32f2f; } /* 日 */
+        .compact-mode tr.day-row-0 th { background-color: #fdd835 !important; } /* 月 */
+        .compact-mode tr.day-row-1 th { background-color: #ef5350 !important; } /* 火 */
+        .compact-mode tr.day-row-2 th { background-color: #4fc3f7 !important; } /* 水 */
+        .compact-mode tr.day-row-3 th { background-color: #81c784 !important; } /* 木 */
+        .compact-mode tr.day-row-4 th { background-color: #f06292 !important; } /* 金 */
+        .compact-mode tr.day-row-5 th { background-color: #5c6bc0 !important; } /* 土 */
+        .compact-mode tr.day-row-6 th { background-color: #d32f2f !important; } /* 日 */
 
-        .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; }
+        .compact-mode td.menu-content { padding: 8px; border-radius: 0; border-bottom: 3px solid #ffe0ea; display: flex; flex-direction: column; gap: 6px; background: #fff !important; }
         .compact-mode .day-row:last-child td { border-bottom: none; }
 
         .drop-row { display: flex; gap: 6px; width: 100%; }
+        /* 画像保存時の再現性を高めるため、box-shadowや複雑なグラデーションを整理 */
         .drop-badge {
             display: flex; align-items: center; justify-content: center;
-            padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white;
-            box-shadow: 0 3px 4px rgba(0,0,0,0.12), inset 0 -2px 3px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.5);
+            padding: 2px 10px; border-radius: 50px; font-size: 13px; font-weight: bold; color: white !important;
             flex: 1; min-height: 35px; max-height: 35px; position: relative; text-align: center;
             line-height: 1.1; white-space: normal; overflow: hidden; word-break: break-all;
+            border: 1px solid rgba(0,0,0,0.1);
         }
-        .drop-badge::after { content: ""; position: absolute; top: 2px; left: 10%; width: 80%; height: 30%; background: rgba(255,255,255,0.3); border-radius: 50px; }
+        /* ツヤ出し効果を擬似要素ではなく、より単純な方法に変更 */
+        .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: rgba(255,255,255,0.2); pointer-events: none; }
 
         .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
         .compact-mode .dish-header-row { display: contents; }
@@ -187,6 +187,7 @@
     </div>
 
     <script>
+        // (JSロジックは変更なし)
         const STORAGE_KEY_DATA = 'Kondate_V50_Data';
         const STORAGE_KEY_PROFILES = 'Kondate_V50_Profiles';
         const SAMPLE_KEY = "サンプル(定番)";
@@ -288,12 +289,12 @@
                         <th class="day-header">${day}</th>
                         <td class="menu-content">
                             <div class="drop-row">
-                                ${p.main ? `<span class="drop-badge" style="background:#f06292">${p.main}</span>` : ''}
-                                ${p.side ? `<span class="drop-badge" style="background:#ffb74d">${p.side}</span>` : ''}
+                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292">${p.main}</span>` : ''}
+                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d">${p.side}</span>` : ''}
                             </div>
                             <div class="drop-row">
-                                ${p.salad ? `<span class="drop-badge" style="background:#aed581">${p.salad}</span>` : ''}
-                                ${p.soup ? `<span class="drop-badge" style="background:#9575cd">${p.soup}</span>` : ''}
+                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581">${p.salad}</span>` : ''}
+                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd">${p.soup}</span>` : ''}
                             </div>
                         </td>
                     </tr>`;
@@ -464,12 +465,26 @@
             const card = document.getElementById(id);
             const links = card.querySelectorAll('.search-link');
             const btns = card.querySelectorAll('button');
+            
+            // 保存前にボタン等を隠す
             links.forEach(l => l.style.display = 'none');
             btns.forEach(b => b.style.display = 'none');
-            const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8" });
+            
+            // html2canvasの設定を最適化
+            const canvas = await html2canvas(card, { 
+                scale: 2, 
+                backgroundColor: "#fff5f8",
+                useCORS: true, // 画像などが別ドメインにある場合の対策
+                logging: false
+            });
+            
             links.forEach(l => l.style.display = 'inline-block');
             btns.forEach(b => b.style.display = 'block');
-            const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
+            
+            const link = document.createElement('a'); 
+            link.href = canvas.toDataURL("image/png"); 
+            link.download = `${name}.png`; 
+            link.click();
         }
 
         function copyText(id) {
