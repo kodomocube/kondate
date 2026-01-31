@@ -67,7 +67,7 @@
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* ボンボンドロップ（コンパクト）専用スタイル */
+        /* コンパクト専用スタイル */
         .compact-mode .dish-type-label,
         .compact-mode .menu-select,
         .compact-mode .fix-btn,
@@ -95,7 +95,7 @@
 </head>
 <body>
 
-    <div class="header-img-container"><img src="title.jpg" alt="Kodomo Cube" class="header-img"></div>
+    <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
     <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
@@ -221,7 +221,7 @@
             card.classList.toggle('compact-mode');
             const btn = document.querySelector('.toggle-compact-btn');
             btn.innerText = card.classList.contains('compact-mode') ? "標準表示" : "コンパクト表示";
-            renderTable(); // 表示モードに合わせて再描画
+            renderTable();
         }
 
         function updateModeLabel(key) {
