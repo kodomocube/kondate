@@ -101,16 +101,17 @@
         #dishPickerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
         #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 80%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .picker-title { font-weight: bold; color: #ff69b4; margin-bottom: 15px; text-align: center; font-size: 1.1rem; }
+        .picker-title { font-weight: bold; color: #ff69b4; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
         .picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; transition: background 0.2s; word-break: break-all; }
         .picker-btn:active { background: #ffe0ea; }
         .picker-btn.none { grid-column: span 2; background: #f5f5f5; color: #888; border-color: #ddd; }
+        
+        .fix-toggle-panel { background: #fff0f5; padding: 12px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border: 2px solid #ffc1e3; cursor: pointer; }
+        .fix-status-label { font-weight: bold; color: #f06292; font-size: 0.9rem; }
     </style>
 </head>
-<body>
-
-    <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
+<body class="compact-mode"> <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
     <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
@@ -167,10 +168,9 @@
         <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()">固定していない献立を自動作成</button>
     </div>
 
-    <div class="card glossy-card" id="planCard">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <div class="card glossy-card compact-mode" id="planCard"> <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <h2 style="margin:0;">📅 今週の献立</h2>
-            <button class="toggle-compact-btn" onclick="toggleCompact()">コンパクト表示</button>
+            <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示</button>
         </div>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
@@ -205,6 +205,9 @@
     <div id="dishPickerOverlay" onclick="closeDishPicker()">
         <div id="dishPickerContent" onclick="event.stopPropagation()">
             <div class="picker-title" id="pickerTitle">料理の変更</div>
+            
+            <div id="pickerFixArea"></div>
+
             <div class="picker-grid" id="pickerGrid"></div>
             <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">キャンセル</button>
         </div>
@@ -264,6 +267,11 @@
             await syncSampleFromGitHubCSV();
             updateProfileSelect();
             renderAll();
+            // 初期表示用
+            const card = document.getElementById('planCard');
+            if(card.classList.contains('compact-mode')) {
+                document.querySelector('.toggle-compact-btn').innerText = "詳細表示";
+            }
             renderTable();
             updateModeLabel('side');
         }
@@ -296,7 +304,7 @@
             const card = document.getElementById('planCard');
             card.classList.toggle('compact-mode');
             const btn = document.querySelector('.toggle-compact-btn');
-            btn.innerText = card.classList.contains('compact-mode') ? "標準表示" : "コンパクト表示";
+            btn.innerText = card.classList.contains('compact-mode') ? "詳細表示" : "コンパクト表示";
             renderTable();
         }
 
@@ -352,12 +360,12 @@
                         <th class="day-header">${day}</th>
                         <td class="menu-content">
                             <div class="drop-row">
-                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="openDishPicker(${i},'main')">${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'main')">主菜なし</span>`}
-                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="openDishPicker(${i},'side')">${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'side')">副菜なし</span>`}
+                                ${p.main ? `<span class="drop-badge" style="background-color:#f06292" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}${p.main}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'main')">${p.mainFixed?'🔒':''}主菜なし</span>`}
+                                ${p.side ? `<span class="drop-badge" style="background-color:#ffb74d" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}${p.side}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'side')">${p.sideFixed?'🔒':''}副菜なし</span>`}
                             </div>
                             <div class="drop-row">
-                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="openDishPicker(${i},'salad')">${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'salad')">サラダなし</span>`}
-                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="openDishPicker(${i},'soup')">${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'soup')">スープなし</span>`}
+                                ${p.salad ? `<span class="drop-badge" style="background-color:#aed581" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}${p.salad}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'salad')">${p.saladFixed?'🔒':''}サラダなし</span>`}
+                                ${p.soup ? `<span class="drop-badge" style="background-color:#9575cd" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}${p.soup}</span>` : `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${i},'soup')">${p.soupFixed?'🔒':''}スープなし</span>`}
                             </div>
                         </td>
                     </tr>`;
@@ -407,9 +415,20 @@
             const overlay = document.getElementById('dishPickerOverlay');
             const grid = document.getElementById('pickerGrid');
             const title = document.getElementById('pickerTitle');
+            const fixArea = document.getElementById('pickerFixArea');
             const typeJP = type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ';
+            const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
             
             title.innerText = `${DAYS[dayIdx]}曜日の${typeJP}を選択`;
+            
+            // 固定切り替えボタン
+            fixArea.innerHTML = `
+                <div class="fix-toggle-panel" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')">
+                    <span class="fix-status-label">${isFixed ? '🔒 固定中 (自動作成で変わりません)' : '🔓 未固定 (自動作成で変わります)'}</span>
+                    <span class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除する':'固定する'}</span>
+                </div>
+            `;
+
             grid.innerHTML = `<div class="picker-btn none" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
             
             data[type + 's'].forEach(dish => {
