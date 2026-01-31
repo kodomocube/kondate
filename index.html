@@ -99,17 +99,37 @@
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* コンパクト表示用のスタイル調整 */
-        .compact-mode .dish-section { margin-bottom: 0px; padding: 2px 4px; border: none; background: transparent; }
-        .compact-mode .dish-header-row { margin-bottom: 0; gap: 4px; flex-wrap: nowrap; }
-        .compact-mode .menu-select { margin-top: 0; padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; flex: 1; height: 26px; }
-        .compact-mode .search-link, 
-        .compact-mode .ing-text,
-        .compact-mode .fix-btn:not(.fixed) { display: none !important; }
-        .compact-mode .fix-btn.fixed { min-width: 32px; font-size: 0.5rem; padding: 2px; height: 18px; line-height: 14px; }
-        .compact-mode .dish-type-label { min-width: 18px; padding: 1px 3px; font-size: 0.5rem; }
-        .compact-mode td.menu-content { padding: 2px; }
-        .compact-mode .day-row { border-bottom: 1px solid #ffebee; }
+        /* ボンボンドロップ（コンパクト）表示用スタイル */
+        .compact-mode .menu-select,
+        .compact-mode .fix-btn,
+        .compact-mode .search-link,
+        .compact-mode .ing-text { display: none !important; }
+
+        .compact-mode table { border-spacing: 0 4px; }
+        .compact-mode th.day-header { width: 30px; font-size: 12px; height: auto; padding: 4px 0; }
+        .compact-mode td.menu-content { padding: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+
+        .drop-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: relative;
+        }
+        .drop-badge::after {
+            content: ""; position: absolute; top: 2px; left: 10%; width: 80%; height: 30%;
+            background: rgba(255,255,255,0.3); border-radius: 50px; pointer-events: none;
+        }
+
+        .compact-mode .dish-section { margin: 0; padding: 0; border: none; background: transparent; display: contents; }
+        .compact-mode .dish-header-row { display: contents; }
 
         .toggle-compact-btn {
             width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0;
@@ -327,6 +347,10 @@
             const rakutenUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodedName}/` : null;
             const cookpadUrl = currentName ? `https://cookpad.com/search/${encodedName}` : null;
 
+            // クラス名から色の取得（バッジ用）
+            const colorMap = { 'label-main': '#f06292', 'label-side': '#ffb74d', 'label-salad': '#aed581', 'label-soup': '#9575cd' };
+            const badgeColor = colorMap[labelClass] || '#ccc';
+
             return `
             <div class="dish-section">
                 <div class="dish-header-row">
@@ -336,6 +360,7 @@
                         <option value="">なし</option>
                         ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                     </select>
+                    ${currentName ? `<span class="drop-badge" style="background:${badgeColor}">${currentName}</span>` : ''}
                 </div>
                 ${currentName ? `
                 <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;" class="recipe-links">
@@ -491,9 +516,12 @@
         async function saveAsImage(id, name) {
             const card = document.getElementById(id);
             const links = card.querySelectorAll('.search-link');
+            const btns = card.querySelectorAll('button');
             links.forEach(l => l.style.display = 'none');
+            btns.forEach(b => b.style.display = 'none');
             const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8" });
             links.forEach(l => l.style.display = 'inline-block');
+            btns.forEach(b => b.style.display = 'block');
             const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
         }
 
