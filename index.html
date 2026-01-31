@@ -55,15 +55,14 @@
         .label-side2 { background: var(--md-tertiary); }
         .fix-btn { font-size: 0.55rem; padding: 2px 5px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
         .fix-btn.fixed { background: #333; color: #fff; border-color: #333; }
-        .menu-select { flex-grow: 1; padding: 2px; font-size: 0.8rem; font-weight: bold; border: 1px solid #eee; background: #fff; max-width: 60%; }
+        .menu-select { flex-grow: 1; padding: 2px; font-size: 0.8rem; font-weight: bold; border: 1px solid #eee; background: #fff; max-width: 55%; }
         .ing-text { font-size: 0.65rem; color: #666; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
         .batch-tag { font-size: 9px; background: #e3f2fd; color: #1565c0; padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
         
-        /* 買い物リスト用スタイル */
         #shoppingListBody { padding-left: 20px; }
         #shoppingListBody li { margin-bottom: 8px; }
-        .search-link { text-decoration: none; font-size: 0.9rem; margin-left: 8px; background: #eee; padding: 2px 6px; border-radius: 4px; color: #333; border: 1px solid #ccc; }
+        .search-link { text-decoration: none; font-size: 0.75rem; margin-left: 4px; background: #eee; padding: 1px 4px; border-radius: 4px; color: #333; border: 1px solid #ccc; display: inline-block; }
     </style>
 </head>
 <body>
@@ -249,6 +248,8 @@
         function renderRow(dayIdx, type, label, labelClass, currentName, ingList) {
             const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
             const pool = type === 'main' ? data.mains : data.sides;
+            const recipeUrl = currentName ? `https://recipe.rakuten.co.jp/search/${encodeURIComponent(currentName)}/` : null;
+            
             return `
                 <div class="dish-section">
                     <div class="dish-header-row">
@@ -258,6 +259,7 @@
                             <option value="">未設定</option>
                             ${pool.map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
                         </select>
+                        ${recipeUrl ? `<a href="${recipeUrl}" target="_blank" class="search-link" title="レシピ検索">🔍</a>` : ''}
                     </div>
                     <small class="ing-text">${ingList.join(',')}</small>
                 </div>`;
@@ -362,7 +364,6 @@
             });
             
             document.getElementById('shoppingListBody').innerHTML = Array.from(ings).sort().map(ing => {
-                // 楽天西友の検索URLを作成
                 const searchUrl = `https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}`;
                 return `<li>
                     <span>${ing}</span>
@@ -450,13 +451,11 @@
         }
 
         async function saveAsImage(id, name) {
-            // 画像保存時は検索ボタン(🔍)を隠すための処理
             const card = document.getElementById(id);
             const links = card.querySelectorAll('.search-link');
             links.forEach(l => l.style.display = 'none');
             const canvas = await html2canvas(card, { scale: 2 });
             links.forEach(l => l.style.display = 'inline-block');
-            
             const link = document.createElement('a'); link.href = canvas.toDataURL(); link.download = `${name}.png`; link.click();
         }
 
@@ -465,7 +464,6 @@
             if (id === 'planBody') {
                 txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side1||'-'} / ${p.side2||'-'}`).join('\n');
             } else if (id === 'shoppingListBody') {
-                // 検索ボタンのテキストを除外してコピー
                 txt = Array.from(document.getElementById(id).querySelectorAll('li')).map(li => {
                     let text = li.querySelector('span').innerText;
                     if(li.querySelector('.batch-tag')) text += ' (在庫あり)';
