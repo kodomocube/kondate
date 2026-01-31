@@ -173,7 +173,16 @@
                 <span>在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span>副菜: <span id="sideBatchModeLabel">作り置きON</span></span><input type="checkbox" id="sideBatchMode" checked onchange="updateModeLabel('side')">
+                <span>副菜: 作り置き日数</span>
+                <select id="sideBatchDays" style="width: auto; margin-bottom: 0;">
+                    <option value="1">1日 (毎日変える)</option>
+                    <option value="2">2日</option>
+                    <option value="3" selected>3日</option>
+                    <option value="4">4日</option>
+                    <option value="5">5日</option>
+                    <option value="6">6日</option>
+                    <option value="7">7日 (1週間同じ)</option>
+                </select>
             </div>
         </div>
         <label>❌ 食べたくない</label><select id="excludeSelect" multiple></select>
@@ -284,7 +293,6 @@
             updateProfileSelect();
             renderAll();
             renderTable();
-            updateModeLabel('side');
             updateBatchBtnLabels();
         }
 
@@ -325,7 +333,6 @@
             const typeJP = type === 'salad' ? 'サラダ' : 'スープ';
             
             if (allLocked) {
-                // ロック解除してランダムで選ぶ
                 const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
                 const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
                 const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
@@ -341,7 +348,6 @@
                     if(d.name) used.push(d.name);
                 });
             } else {
-                // なしにしてロック
                 data.currentPlan.forEach(p => {
                     p[type] = "";
                     p[type + 'Fixed'] = true;
@@ -360,12 +366,6 @@
             
             sBtn.innerText = sLocked ? "一括でサラダをありにする" : "一括でサラダをなしにする";
             pBtn.innerText = pLocked ? "一括でスープをありにする" : "一括でスープをなしにする";
-        }
-
-        function updateModeLabel(key) {
-            const isBatch = document.getElementById(key + 'BatchMode').checked;
-            const label = document.getElementById(key + 'ModeLabel');
-            if(label) label.innerText = isBatch ? "3日分作り置きON" : "3日分作り置きOFF";
         }
 
         function renderAll() {
@@ -484,12 +484,37 @@
             const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
             const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
             const prio = document.getElementById('priorityMode').checked;
-            const sideBatch = document.getElementById('sideBatchMode').checked;
+            const sideBatchDays = parseInt(document.getElementById('sideBatchDays').value);
+
             let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
             DAYS.forEach((_, i) => { if(!data.currentPlan[i].mainFixed) { let pool = data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name)); if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name); } });
+            
+            // 副菜のロジック: 月曜から順に日数分固定
             let currentSide = "";
+            let remainingBatch = 0;
             let usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
-            DAYS.forEach((_, i) => { if(!data.currentPlan[i].sideFixed) { if(sideBatch) { if(i % 3 === 0 || !currentSide) { let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)); if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); currentSide = d.name; if(d.name) usedS.push(d.name); } data.currentPlan[i].side = currentSide; } else { let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)); if(pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i].side = d.name; if(d.name) usedS.push(d.name); } } });
+
+            DAYS.forEach((_, i) => {
+                if (data.currentPlan[i].sideFixed) {
+                    // 固定されている日は残り日数をリセットし、その日の料理を「最後に使った料理」として考慮する場合もあるが、
+                    // ここでは「固定以外を自動作成」なので、固定日はそのまま、スキップ
+                    remainingBatch = 0;
+                    return;
+                }
+                
+                if (remainingBatch <= 0) {
+                    let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name));
+                    if (pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name));
+                    const d = pickDish(pool, want, inv, prio);
+                    currentSide = d.name;
+                    remainingBatch = sideBatchDays;
+                    if(d.name) usedS.push(d.name);
+                }
+                
+                data.currentPlan[i].side = currentSide;
+                remainingBatch--;
+            });
+
             ['salad', 'soup'].forEach(type => { let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]); DAYS.forEach((_, i) => { if(!data.currentPlan[i][type+'Fixed']) { let pool = data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name)); if(pool.length === 0) pool = data[type+'s'].filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name); } }); });
             renderTable(); saveToLocal();
         }
