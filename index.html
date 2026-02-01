@@ -38,7 +38,7 @@
         .btn-csv { background: linear-gradient(#b0bec5, #78909c); }
         .btn-image { background: linear-gradient(#ff8aab, #f44336); }
         .btn-line { background: linear-gradient(#06C755, #05b34c); }
-        .btn-ruby { background: linear-gradient(#80cbc4, #4db6ac); margin-bottom: 16px; }
+        .btn-furigana { background: linear-gradient(#4db6ac, #00897b); }
 
         .glossy-card { background: #ffffff !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4) !important; position: relative; }
 
@@ -82,17 +82,14 @@
         #shoppingListBody { list-style: none; padding: 0; }
         #shoppingListBody li { background: #fff; margin-bottom: 8px; padding: 12px; border-radius: 20px; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(255,182,193,0.3); display: flex; align-items: center; justify-content: space-between; color: #d81b60; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         #shoppingListBody li.checked { background: #eeeeee !important; color: #9e9e9e !important; text-decoration: line-through; box-shadow: none; border: 2px solid #ddd; }
-        #shoppingListBody li.checked .batch-tag { background: #bdbdbd !important; color: #fff !important; }
 
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
-        /* コンパクト表示 */
         .compact-mode#planCard .dish-section { display: none !important; }
         .compact-mode#planCard .drop-row { display: flex; margin-bottom: 4px; }
         .compact-mode#planCard .drop-row:last-child { margin-bottom: 0; }
-        
         #planCard:not(.compact-mode) .drop-row { display: none !important; }
 
         .compact-mode#planCard table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
@@ -102,176 +99,182 @@
         .drop-row { gap: 4px; width: 100%; }
         .drop-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 4px; border-radius: 12px; color: white !important; flex: 1; min-height: 40px; position: relative; text-align: center; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; }
         .drop-badge .dish-name { font-size: 11px; font-weight: bold; line-height: 1.1; margin-bottom: 2px; }
-        .drop-badge .dish-ings { font-size: 8px; line-height: 1; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
         
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
-        
+        .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
+        .order-on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
+        .order-off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
+
         #dishPickerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
         #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 85%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; word-break: break-all; }
+        .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; transition: background 0.2s; word-break: break-all; }
         .picker-btn.selected { background: #ff9ecd; color: white; border-color: #ff9ecd; }
-        
-        ruby rt { font-size: 0.6em; color: #ff69b4; font-weight: normal; }
+
+        /* ルビ表示用スタイル */
+        ruby { font-size: 1.1em; line-height: 1.8; }
+        rt { font-size: 0.55em; color: #f06292; letter-spacing: 0; }
     </style>
 </head>
 <body>
 
     <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
-    <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
+    <div style="text-align:center; padding: 0 16px;">
+        <button class="btn-furigana" id="furiganaToggle" onclick="toggleFurigana()">ふりがなモード: OFF</button>
+    </div>
+    <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;" data-text="🎀 献立＆買い物リストメーカー">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
-        <button class="btn-ruby" id="rubyToggleBtn" onclick="toggleRuby()">📛 ふりがなモード: OFF</button>
-        <details><summary><h2 style="display:inline">データの管理</h2></summary>
+        <details><summary><h2 style="display:inline" data-text="データの管理">データの管理</h2></summary>
             <div class="details-content">
                 <select id="profileSelect"></select>
                 <div class="btn-row">
-                    <button class="btn-load" onclick="loadProfile()">読み込む</button>
-                    <button class="btn-delete" onclick="deleteProfile()">削除</button>
+                    <button class="btn-load" onclick="loadProfile()" data-text="読み込む">読み込む</button>
+                    <button class="btn-delete" onclick="deleteProfile()" data-text="削除">削除</button>
                 </div>
                 <hr style="border:0; border-top:2px dashed #ffe0ea; margin:12px 0;">
                 <input type="text" id="profileName" placeholder="新規保存名">
-                <button class="btn-save" onclick="saveProfile()">保存</button>
+                <button class="btn-save" onclick="saveProfile()" data-text="保存">保存</button>
+                <div class="btn-row">
+                    <button class="btn-csv" onclick="exportCSV()" data-text="CSV出力">CSV出力</button>
+                    <button class="btn-csv" onclick="document.getElementById('csvInput').click()" data-text="CSV入力">CSV入力</button>
+                    <input type="file" id="csvInput" style="display:none" accept=".csv" onchange="importCSV(this)">
+                </div>
             </div>
         </details>
     </div>
 
     <div class="card">
-        <details><summary><h2 style="display:inline">料理の登録</h2></summary>
+        <details><summary><h2 style="display:inline" data-text="料理の登録">料理の登録</h2></summary>
             <div class="details-content">
                 <div class="btn-row"><input type="text" id="addName" placeholder="料理名"><input type="text" id="addIng" placeholder="材料"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-                    <button class="btn-main" onclick="addDish('main')">主菜追加</button>
-                    <button class="btn-side" onclick="addDish('side')">副菜追加</button>
-                    <button class="btn-salad" onclick="addDish('salad')">サラダ追加</button>
-                    <button class="btn-soup" onclick="addDish('soup')">スープ追加</button>
+                    <button class="btn-main" onclick="addDish('main')" data-text="主菜追加">主菜追加</button>
+                    <button class="btn-side" onclick="addDish('side')" data-text="副菜追加">副菜追加</button>
+                    <button class="btn-salad" onclick="addDish('salad')" data-text="サラダ追加">サラダ追加</button>
+                    <button class="btn-soup" onclick="addDish('soup')" data-text="スープ追加">スープ追加</button>
                 </div>
-                <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
-                <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
-                <label>サラダ</label><div id="saladListDisplay" class="scroll-list"></div>
-                <label>スープ</label><div id="soupListDisplay" class="scroll-list"></div>
             </div>
         </details>
     </div>
 
     <div class="card">
-        <h2>作成条件</h2>
-        <label>🏠 在庫がある食材</label>
+        <h2 data-text="作成条件">作成条件</h2>
+        <label data-text="🏠 在庫がある食材">🏠 在庫がある食材</label>
         <div class="picker-trigger" onclick="openMultiPicker('inventory')">
-            <div>選択する<span id="inventoryLabel" class="selected-tags"></span></div>
+            <div><span data-text="選択する">選択する</span><span id="inventoryLabel" class="selected-tags"></span></div>
         </div>
 
         <div style="background: #fff0f5; border: 2px solid #ffe0ea; border-radius: 20px; padding: 12px; margin: 10px 0;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span>在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
+                <span data-text="在庫食材を優先活用">在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span>副菜: 作り置き日数</span>
+                <span data-text="副菜: 作り置き日数">副菜: 作り置き日数</span>
                 <select id="sideBatchDays" style="width: auto; margin-bottom: 0;">
-                    <option value="1">1日 (毎日変える)</option>
+                    <option value="1">1日</option>
                     <option value="3" selected>3日</option>
                     <option value="7">7日</option>
                 </select>
             </div>
         </div>
-        
-        <label>⭕️ 食べたい料理</label>
+        <label data-text="⭕️ 食べたい料理">⭕️ 食べたい料理</label>
         <div class="picker-trigger" onclick="openMultiPicker('want')">
-            <div>選択する<span id="wantLabel" class="selected-tags"></span></div>
+            <div><span data-text="選択する">選択する</span><span id="wantLabel" class="selected-tags"></span></div>
         </div>
-
-        <label>❌ 食べたくない料理</label>
+        <label data-text="❌ 食べたくない料理">❌ 食べたくない料理</label>
         <div class="picker-trigger" onclick="openMultiPicker('exclude')">
-            <div>選択する<span id="excludeLabel" class="selected-tags"></span></div>
+            <div><span data-text="選択する">選択する</span><span id="excludeLabel" class="selected-tags"></span></div>
         </div>
-
-        <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()">固定していない献立を自動作成</button>
+        <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()" data-text="固定していない献立を自動作成">固定していない献立を自動作成</button>
     </div>
 
     <div class="card glossy-card compact-mode" id="planCard">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h2 style="margin:0;">📅 今週の献立</h2>
-            <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示にする</button>
+            <h2 style="margin:0;" data-text="📅 今週の献立">📅 今週の献立</h2>
+            <button class="toggle-compact-btn" onclick="toggleCompact()" data-text="詳細表示にする">詳細表示にする</button>
         </div>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
-            <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')">画像保存</button>
-            <button class="btn-save" onclick="copyText('planBody')">テキストコピー</button>
+            <button class="btn-load" onclick="clearUnfixed()" data-text="固定以外クリア">固定以外クリア</button>
+            <button class="btn-save" onclick="copyText('planBody')" data-text="テキストコピー">テキストコピー</button>
+        </div>
+        <div class="btn-row">
+            <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')" data-text="画像保存">画像保存</button>
+            <button class="btn-line" onclick="shareAsImage('planCard', '今週の献立')" data-text="画像をLINE等で送る">画像をLINE等で送る</button>
         </div>
     </div>
 
     <div class="card glossy-card" id="shoppingListCard">
-        <h2>🛒 買い物リスト</h2>
+        <h2 data-text="🛒 買い物リスト">🛒 買い物リスト</h2>
         <ul id="shoppingListBody"></ul>
-        <button class="btn-line" onclick="sendToLine()">LINEで送る</button>
+        <div class="btn-row">
+            <button class="btn-save" onclick="copyText('shoppingListBody')" data-text="テキストコピー">テキストコピー</button>
+            <button class="btn-line" onclick="sendToLine()" data-text="LINEで送る">LINEで送る</button>
+        </div>
     </div>
 
     <div id="dishPickerOverlay" onclick="closeDishPicker()">
         <div id="dishPickerContent" onclick="event.stopPropagation()">
-            <div id="pickerTitle" style="text-align:center; font-weight:bold; margin-bottom:15px; color:#ff69b4;"></div>
+            <div class="picker-title" id="pickerTitle"></div>
             <div id="pickerFixArea"></div>
             <div class="picker-grid" id="pickerGrid"></div>
-            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">閉じる</button>
+            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()" data-text="閉じる">閉じる</button>
         </div>
     </div>
 
     <script>
-        const STORAGE_KEY_DATA = 'Kondate_V60_Data';
+        const STORAGE_KEY_DATA = 'Kondate_V50_Data';
+        const STORAGE_KEY_PROFILES = 'Kondate_V50_Profiles';
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
-        let isRubyOn = false;
+        
+        let isFuriganaMode = false;
+        let selectedInv = new Set();
+        let selectedWant = new Set();
+        let selectedExclude = new Set();
+        let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
+        let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
 
-        const RUBY_DICT = {
-            "月": "げつ", "火": "か", "水": "すい", "木": "もく", "金": "きん", "土": "ど", "日": "にち",
-            "主菜": "しゅさい", "副菜": "ふくさい", "献立": "こんだて", "在庫": "ざいこ", "食材": "しょくざい",
-            "料理": "りょうり", "買い物": "かいもの", "活用": "かつよう", "固定": "こてい", "作成": "さくせい"
+        const FURIGANA_MAP = {
+            "献立": "こんだて", "買": "か", "物": "もの", "作": "つく", "成": "せい", "条": "じょう", "件": "けん", "在": "ざい", "庫": "こ", "食": "しょく", "材": "ざい", "選": "せん", "択": "たく", "理": "り", "管": "かん", "登": "とう", "録": "ろく", "週": "しゅう", "主": "しゅ", "菜": "さい", "副": "ふく", "汁": "しる", "固定": "こてい", "以外": "いがい", "画像": "がぞう", "保存": "ほぞん", "詳": "しょう", "細": "さい", "表": "ひょう", "示": "じ", "優先": "ゆうせん", "活用": "かつよう", "日": "にち", "数": "すう"
         };
 
-        function addRuby(text) {
-            if (!isRubyOn) return text;
-            let result = text;
-            for (const [kanji, yomi] of Object.entries(RUBY_DICT)) {
-                const reg = new RegExp(kanji, 'g');
-                result = result.replace(reg, `<ruby>${kanji}<rt>${yomi}</rt></ruby>`);
-            }
-            // ユーザー登録の「漢字(よみ)」形式にも対応
-            return result.replace(/([一-龠]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+        function toggleFurigana() {
+            isFuriganaMode = !isFuriganaMode;
+            document.getElementById('furiganaToggle').innerText = `ふりがなモード: ${isFuriganaMode ? 'ON' : 'OFF'}`;
+            applyFuriganaAll();
+            renderTable(); // 動的要素の再描画
         }
 
-        function toggleRuby() {
-            isRubyOn = !isRubyOn;
-            document.getElementById('rubyToggleBtn').innerText = `📛 ふりがなモード: ${isRubyOn ? 'ON' : 'OFF'}`;
-            renderTable();
-            renderAll();
-        }
-
-        let selectedInv = new Set(), selectedWant = new Set(), selectedExclude = new Set();
-        let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
-
-        function renderAll() {
-            ['main', 'side', 'salad', 'soup'].forEach(t => {
-                const list = data[t + 's'];
-                document.getElementById(t + 'ListDisplay').innerHTML = list.map((d, i) => `<div class="list-item"><span>${addRuby(d.name)}</span><span style="color:red" onclick="deleteDish('${t}',${i})">✕</span></div>`).join('');
+        function applyFuriganaAll() {
+            const elements = document.querySelectorAll('[data-text]');
+            elements.forEach(el => {
+                const originalText = el.getAttribute('data-text');
+                el.innerHTML = isFuriganaMode ? convertToRuby(originalText) : originalText;
             });
-            document.getElementById('inventoryLabel').innerHTML = addRuby(Array.from(selectedInv).join('、') || "なし");
-            document.getElementById('wantLabel').innerHTML = addRuby(Array.from(selectedWant).join('、') || "なし");
-            document.getElementById('excludeLabel').innerHTML = addRuby(Array.from(selectedExclude).join('、') || "なし");
-            saveToLocal();
         }
+
+        function convertToRuby(text) {
+            let result = text;
+            Object.keys(FURIGANA_MAP).forEach(kanji => {
+                const regex = new RegExp(kanji, 'g');
+                result = result.replace(regex, `<ruby>${kanji}<rt>${FURIGANA_MAP[kanji]}</rt></ruby>`);
+            });
+            return result;
+        }
+
+        async function init() { updateProfileSelect(); renderTable(); updateLabels(); }
 
         function renderTable() {
             let html = "";
             DAYS.forEach((day, i) => {
                 const p = data.currentPlan[i];
                 html += `<tr class="day-row day-row-${i}">
-                    <th class="day-header">${addRuby(day)}</th>
+                    <th class="day-header">${day}</th>
                     <td class="menu-content">
-                        <div class="drop-row">
-                            ${renderBadge(i, 'main', '#f06292', '主菜')}
-                            ${renderBadge(i, 'side', '#ffb74d', '副菜')}
-                        </div>
-                        ${renderRow(i, 'main', '主', 'label-main')}
-                        ${renderRow(i, 'side', '副', 'label-side')}
+                        <div class="drop-row">${renderBadge(i, 'main', '#f06292', '主菜')}${renderBadge(i, 'side', '#ffb74d', '副菜')}</div>
+                        <div class="drop-row">${renderBadge(i, 'salad', '#aed581', 'サラダ')}${renderBadge(i, 'soup', '#9575cd', 'スープ')}</div>
                     </td>
                 </tr>`;
             });
@@ -281,75 +284,63 @@
 
         function renderBadge(dayIdx, type, color, label) {
             const name = data.currentPlan[dayIdx][type];
-            return `<span class="drop-badge" style="background-color:${name ? color : '#eee'}" onclick="openDishPicker(${dayIdx},'${type}')">
-                <div class="dish-name">${addRuby(name || label + 'なし')}</div>
-            </span>`;
-        }
-
-        function renderRow(dayIdx, type, label, labelClass) {
-            const currentName = data.currentPlan[dayIdx][type];
             const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
-            return `<div class="dish-section">
-                <div class="dish-header-row">
-                    <span class="dish-type-label ${labelClass}">${addRuby(label)}</span>
-                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${addRuby(isFixed?'固定中':'未固定')}</span>
-                    <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
-                        <option value="">なし</option>
-                        ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
-                    </select>
-                </div>
-            </div>`;
+            const displayText = name ? (isFuriganaMode ? convertToRuby(name) : name) : (isFuriganaMode ? convertToRuby(label + "なし") : label + "なし");
+            return `<span class="drop-badge" style="background-color:${name ? color : '#eee'}; color:${name ? 'white' : '#999'};" onclick="openDishPicker(${dayIdx},'${type}')">
+                <div class="dish-name">${isFixed ? '🔒' : ''}${displayText}</div>
+            </span>`;
         }
 
         function openMultiPicker(mode) {
             const overlay = document.getElementById('dishPickerOverlay');
             const grid = document.getElementById('pickerGrid');
             let items = [], selectedSet, title;
-            if (mode === 'inventory') {
-                items = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort();
-                selectedSet = selectedInv; title = "在庫の食材";
-            } else {
-                items = ['mains', 'sides'].flatMap(k => data[k].map(d => d.name)).sort();
-                selectedSet = (mode === 'want') ? selectedWant : selectedExclude;
-                title = (mode === 'want') ? "食べたい料理" : "食べたくない料理";
-            }
-            document.getElementById('pickerTitle').innerHTML = addRuby(title);
+            if (mode === 'inventory') { items = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort(); selectedSet = selectedInv; title = "在庫がある食材"; }
+            else { items = ['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].map(d => d.name)).sort(); selectedSet = (mode === 'want') ? selectedWant : selectedExclude; title = (mode === 'want') ? "⭕️ 食べたい料理" : "❌ 食べたくない料理"; }
+            
+            document.getElementById('pickerTitle').innerText = title;
             grid.innerHTML = "";
             items.forEach(item => {
                 const btn = document.createElement('div');
                 btn.className = `picker-btn ${selectedSet.has(item) ? 'selected' : ''}`;
-                btn.innerHTML = addRuby(item);
-                btn.onclick = () => {
-                    selectedSet.has(item) ? selectedSet.delete(item) : selectedSet.add(item);
-                    btn.classList.toggle('selected');
-                    updateLabels();
-                };
+                btn.innerHTML = isFuriganaMode ? convertToRuby(item) : item;
+                btn.onclick = () => { if (selectedSet.has(item)) selectedSet.delete(item); else selectedSet.add(item); btn.classList.toggle('selected'); updateLabels(); };
                 grid.appendChild(btn);
             });
             overlay.style.display = 'flex';
         }
 
         function updateLabels() {
-            document.getElementById('inventoryLabel').innerHTML = addRuby(Array.from(selectedInv).join('、') || "なし");
-            document.getElementById('wantLabel').innerHTML = addRuby(Array.from(selectedWant).join('、') || "なし");
-            document.getElementById('excludeLabel').innerHTML = addRuby(Array.from(selectedExclude).join('、') || "なし");
+            document.getElementById('inventoryLabel').innerText = Array.from(selectedInv).join('、') || "なし";
+            document.getElementById('wantLabel').innerText = Array.from(selectedWant).join('、') || "なし";
+            document.getElementById('excludeLabel').innerText = Array.from(selectedExclude).join('、') || "なし";
+        }
+
+        function openDishPicker(dayIdx, type) {
+            const overlay = document.getElementById('dishPickerOverlay');
+            const grid = document.getElementById('pickerGrid');
+            const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
+            document.getElementById('pickerTitle').innerText = DAYS[dayIdx] + "曜日の料理";
+            document.getElementById('pickerFixArea').innerHTML = `<div class="fix-toggle-panel" style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; background:#fff0f5; padding:10px; border-radius:15px; border:2px solid #ffc1e3;" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')"><span>${isFixed ? '🔒 固定中' : '🔓 未固定'}</span><button class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除':'固定'}</button></div>`;
+            grid.innerHTML = `<div class="picker-btn" style="grid-column:span 2; background:#f5f5f5;" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
+            data[type + 's'].forEach(dish => {
+                const btn = document.createElement('div');
+                btn.className = "picker-btn";
+                btn.innerHTML = isFuriganaMode ? convertToRuby(dish.name) : dish.name;
+                btn.onclick = () => { updateChoice(dayIdx, type, dish.name); closeDishPicker(); };
+                grid.appendChild(btn);
+            });
+            overlay.style.display = 'flex';
         }
 
         function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
         function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
-        function toggleCompact() { document.getElementById('planCard').classList.toggle('compact-mode'); renderTable(); }
-        function addDish(t) { const n = document.getElementById('addName').value; if(n){data[t+'s'].push({name:n, ing:[]}); renderAll(); renderTable();} }
-        function deleteDish(t, i) { data[t+'s'].splice(i, 1); renderAll(); renderTable(); }
-        function openDishPicker(dayIdx, type) { openMultiPicker('want'); } // 簡易版
         function closeDishPicker() { document.getElementById('dishPickerOverlay').style.display = 'none'; }
+        function toggleCompact() { document.getElementById('planCard').classList.toggle('compact-mode'); renderTable(); }
         function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
-        function updateShoppingList() {
-            let html = "";
-            data.currentPlan.forEach(p => { if(p.main) html += `<li>${addRuby(p.main)}の材料</li>`; });
-            document.getElementById('shoppingListBody').innerHTML = html;
-        }
+        function updateProfileSelect() { /* プロフィール更新処理 */ }
 
-        renderAll(); renderTable();
+        init();
     </script>
 </body>
 </html>
