@@ -44,6 +44,14 @@
         h2 { font-size: 1.1rem; color: #ff69b4; text-shadow: 1px 1px 0 #fff; }
         input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 2px solid #ffe0ea; border-radius: 20px; font-size: 16px; box-sizing: border-box; background: #fff; }
 
+        /* 特殊なピッカー用ボタン */
+        .picker-trigger {
+            width: 100%; padding: 12px; margin-bottom: 12px; border: 2px solid #ffe0ea; border-radius: 20px; 
+            background: #fff; text-align: left; color: #5d4037; font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        }
+        .picker-trigger::after { content: "▼"; font-size: 10px; color: #ff9ecd; }
+        .selected-tags { font-size: 0.75rem; color: #f06292; font-weight: bold; margin-top: 4px; display: block; }
+
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
         th.day-header { width: 35px; background: #ff9ecd; color: white; border-radius: 15px 0 0 15px; text-shadow: 1px 1px 0 rgba(0,0,0,0.1); }
         td.menu-content { padding: 8px; background: white; border-radius: 0 15px 15px 0; border: 2px solid #fff; }
@@ -112,12 +120,13 @@
         .order-def { font-size: 0.75rem; color: #555; margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 12px; line-height: 1.5; }
 
         #dishPickerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
-        #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 80%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
+        #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 85%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .picker-title { font-weight: bold; color: #ff69b4; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
         .picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; transition: background 0.2s; word-break: break-all; }
         .picker-btn:active { background: #ffe0ea; }
+        .picker-btn.selected { background: #ff9ecd; color: white; border-color: #ff9ecd; }
         .picker-btn.none { grid-column: span 2; background: #f5f5f5; color: #888; border-color: #ddd; }
         
         .fix-toggle-panel { background: #fff0f5; padding: 12px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border: 2px solid #ffc1e3; cursor: pointer; }
@@ -169,7 +178,11 @@
 
     <div class="card">
         <h2>作成条件</h2>
-        <label>🏠 在庫にある食材</label><select id="inventorySelect" multiple></select>
+        <label>🏠 在庫がある食材</label>
+        <div class="picker-trigger" onclick="openMultiPicker('inventory')">
+            <div>選択する<span id="inventoryLabel" class="selected-tags"></span></div>
+        </div>
+
         <div style="background: #fff0f5; border: 2px solid #ffe0ea; border-radius: 20px; padding: 12px; margin: 10px 0;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span>在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
@@ -187,8 +200,16 @@
                 </select>
             </div>
         </div>
-        <label>⭕️ 食べたい料理</label><select id="wantToEatSelect" multiple></select>
-        <label>❌ 食べたくない料理</label><select id="excludeSelect" multiple></select>
+        <label>⭕️ 食べたい料理</label>
+        <div class="picker-trigger" onclick="openMultiPicker('want')">
+            <div>選択する<span id="wantLabel" class="selected-tags"></span></div>
+        </div>
+
+        <label>❌ 食べたくない料理</label>
+        <div class="picker-trigger" onclick="openMultiPicker('exclude')">
+            <div>選択する<span id="excludeLabel" class="selected-tags"></span></div>
+        </div>
+
         <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()">固定していない献立を自動作成</button>
     </div>
 
@@ -233,7 +254,7 @@
 
     <div id="dishPickerOverlay" onclick="closeDishPicker()">
         <div id="dishPickerContent" onclick="event.stopPropagation()">
-            <div class="picker-title" id="pickerTitle">料理の変更</div>
+            <div class="picker-title" id="pickerTitle"></div>
             <div id="pickerFixArea"></div>
             <div class="picker-grid" id="pickerGrid"></div>
             <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">閉じる</button>
@@ -249,6 +270,9 @@
 
         let isOrderOn = true;
         let checkedItems = new Set();
+        let selectedInv = new Set();
+        let selectedWant = new Set();
+        let selectedExclude = new Set();
 
         const CATEGORY_ORDER = { "野菜・果物": 0, "肉": 1, "魚": 2, "乳製品・豆腐・納豆": 3, "冷凍・加工食品": 4, "調味料・その他": 5 };
         const KEYWORDS = {
@@ -333,9 +357,9 @@
         function toggleBatchClear(type) {
             const allLocked = data.currentPlan.every(p => p[type + 'Fixed']);
             if (allLocked) {
-                const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
-                const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
-                const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
+                const inv = Array.from(selectedInv);
+                const exc = Array.from(selectedExclude);
+                const want = Array.from(selectedWant);
                 const prio = document.getElementById('priorityMode').checked;
                 let used = [];
                 data.currentPlan.forEach(p => {
@@ -365,7 +389,7 @@
 
         function renderAll() {
             ['main', 'side', 'salad', 'soup'].forEach(t => renderFullList(t));
-            updateSelectors();
+            updateLabels();
             saveToLocal();
         }
 
@@ -391,12 +415,47 @@
 
         function deleteDish(t, i) { data[t + 's'].splice(i, 1); renderAll(); renderTable(); }
 
-        function updateSelectors() {
-            const allIng = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort();
-            const allNames = ['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].map(d => d.name)).sort();
-            document.getElementById('inventorySelect').innerHTML = allIng.map(i => `<option value="${i}">${i}</option>`).join('');
-            document.getElementById('excludeSelect').innerHTML = allNames.map(n => `<option value="${n}">${n}</option>`).join('');
-            document.getElementById('wantToEatSelect').innerHTML = allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+        // 多選択ピッカーを開く
+        function openMultiPicker(mode) {
+            const overlay = document.getElementById('dishPickerOverlay');
+            const grid = document.getElementById('pickerGrid');
+            const title = document.getElementById('pickerTitle');
+            const fixArea = document.getElementById('pickerFixArea');
+            fixArea.innerHTML = "";
+            grid.innerHTML = "";
+
+            let items = [], selectedSet, titleText;
+            if (mode === 'inventory') {
+                items = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort();
+                selectedSet = selectedInv;
+                titleText = "在庫がある食材";
+            } else if (mode === 'want' || mode === 'exclude') {
+                items = ['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].map(d => d.name)).sort();
+                selectedSet = (mode === 'want') ? selectedWant : selectedExclude;
+                titleText = (mode === 'want') ? "⭕️ 食べたい料理" : "❌ 食べたくない料理";
+            }
+
+            title.innerText = titleText;
+            items.forEach(item => {
+                const btn = document.createElement('div');
+                btn.className = `picker-btn ${selectedSet.has(item) ? 'selected' : ''}`;
+                btn.innerText = item;
+                btn.onclick = () => {
+                    if (selectedSet.has(item)) selectedSet.delete(item);
+                    else selectedSet.add(item);
+                    btn.classList.toggle('selected');
+                    updateLabels();
+                };
+                grid.appendChild(btn);
+            });
+
+            overlay.style.display = 'flex';
+        }
+
+        function updateLabels() {
+            document.getElementById('inventoryLabel').innerText = Array.from(selectedInv).join('、') || "なし";
+            document.getElementById('wantLabel').innerText = Array.from(selectedWant).join('、') || "なし";
+            document.getElementById('excludeLabel').innerText = Array.from(selectedExclude).join('、') || "なし";
         }
 
         function renderTable() {
@@ -472,6 +531,7 @@
             const fixArea = document.getElementById('pickerFixArea');
             const typeJP = type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ';
             const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
+            
             title.innerText = `${DAYS[dayIdx]}曜日の${typeJP}を選択`;
             fixArea.innerHTML = `<div class="fix-toggle-panel" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')"><span class="fix-status-label">${isFixed ? '🔒 固定中' : '🔓 未固定'}</span><span class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除':'固定'}</span></div>`;
             grid.innerHTML = `<div class="picker-btn none" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
@@ -481,9 +541,9 @@
         function closeDishPicker() { document.getElementById('dishPickerOverlay').style.display = 'none'; }
 
         function generatePlan() {
-            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
-            const exc = Array.from(document.getElementById('excludeSelect').selectedOptions).map(o => o.value);
-            const want = Array.from(document.getElementById('wantToEatSelect').selectedOptions).map(o => o.value);
+            const inv = Array.from(selectedInv);
+            const exc = Array.from(selectedExclude);
+            const want = Array.from(selectedWant);
             const prio = document.getElementById('priorityMode').checked;
             const sideBatchDays = parseInt(document.getElementById('sideBatchDays').value);
             let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
@@ -498,7 +558,7 @@
         function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
         function updateShoppingList() {
-            const inv = Array.from(document.getElementById('inventorySelect').selectedOptions).map(o => o.value);
+            const inv = Array.from(selectedInv);
             let ings = new Set();
             data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { const d = data[t+'s'].find(x => x.name === p[t]); if(d) d.ing.forEach(ing => ings.add(ing)); }); });
             let listArr = Array.from(ings);
