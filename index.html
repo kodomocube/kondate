@@ -38,13 +38,13 @@
         .btn-csv { background: linear-gradient(#b0bec5, #78909c); }
         .btn-image { background: linear-gradient(#ff8aab, #f44336); }
         .btn-line { background: linear-gradient(#06C755, #05b34c); }
-        .btn-furigana { background: linear-gradient(#4db6ac, #00897b); }
 
         .glossy-card { background: #ffffff !important; border: 3px solid #fff !important; box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4) !important; position: relative; }
 
         h2 { font-size: 1.1rem; color: #ff69b4; text-shadow: 1px 1px 0 #fff; }
         input[type="text"], select { width: 100%; padding: 12px; margin-bottom: 8px; border: 2px solid #ffe0ea; border-radius: 20px; font-size: 16px; box-sizing: border-box; background: #fff; }
 
+        /* 特殊なピッカー用ボタン */
         .picker-trigger {
             width: 100%; padding: 12px; margin-bottom: 12px; border: 2px solid #ffe0ea; border-radius: 20px; 
             background: #fff; text-align: left; color: #5d4037; font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
@@ -82,63 +82,76 @@
         #shoppingListBody { list-style: none; padding: 0; }
         #shoppingListBody li { background: #fff; margin-bottom: 8px; padding: 12px; border-radius: 20px; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(255,182,193,0.3); display: flex; align-items: center; justify-content: space-between; color: #d81b60; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         #shoppingListBody li.checked { background: #eeeeee !important; color: #9e9e9e !important; text-decoration: line-through; box-shadow: none; border: 2px solid #ddd; }
+        #shoppingListBody li.checked .batch-tag { background: #bdbdbd !important; color: #fff !important; }
 
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
         .scroll-list { max-height: 200px; overflow-y: auto; border: 2px solid #ffe0ea; border-radius: 18px; padding: 8px; background: #fff; margin-bottom: 12px; }
         .list-item { background: #fffaf0; border: 1px solid #ffecb3; border-radius: 15px; padding: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px; border-left: 6px solid #ffcc80; }
 
+        /* コンパクト表示の時の制御 */
         .compact-mode#planCard .dish-section { display: none !important; }
         .compact-mode#planCard .drop-row { display: flex; margin-bottom: 4px; }
         .compact-mode#planCard .drop-row:last-child { margin-bottom: 0; }
+        
+        /* 詳細表示の時の制御 */
         #planCard:not(.compact-mode) .drop-row { display: none !important; }
 
+        /* コンパクト表示時のテーブルスタイル */
         .compact-mode#planCard table { border-spacing: 0; border: 1px solid #ffd1dc; border-radius: 15px; overflow: hidden; background: #fff; }
         .compact-mode#planCard th.day-header { width: 35px; font-size: 14px; border-radius: 0; border-right: 1px solid #ffd1dc; color: white !important; }
         .compact-mode#planCard td.menu-content { padding: 4px 8px; border-radius: 0; border-bottom: 2px solid #ffe0ea; display: flex; flex-direction: column; background: #fff !important; }
+        .compact-mode#planCard .day-row:last-child td { border-bottom: none; }
         
         .drop-row { gap: 4px; width: 100%; }
         .drop-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 4px; border-radius: 12px; color: white !important; flex: 1; min-height: 40px; position: relative; text-align: center; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; }
         .drop-badge .dish-name { font-size: 11px; font-weight: bold; line-height: 1.1; margin-bottom: 2px; }
+        .drop-badge .dish-ings { font-size: 8px; line-height: 1; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 95%; }
+        .drop-badge::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 40%; background: rgba(255,255,255,0.15); pointer-events: none; }
         
         .toggle-compact-btn { width: auto; padding: 6px 12px; font-size: 0.7rem; margin-bottom: 0; background: linear-gradient(#f06292, #e91e63); display: inline-block; vertical-align: middle; }
+        .batch-action-btn { font-size: 0.7rem; padding: 8px 10px; border-radius: 100px; width: 100%; font-weight: bold; color: white; cursor: pointer; margin-bottom: 0; }
+        .btn-salad-action { background: linear-gradient(#c5e1a5, #8bc34a); }
+        .btn-soup-action { background: linear-gradient(#ce93d8, #9c27b0); }
+        
         .order-toggle-btn { width: auto; padding: 8px 16px; font-size: 0.9rem; margin-bottom: 0; display: inline-block; color: #fff !important; }
         .order-on { background: linear-gradient(#e65100, #bf360c); box-shadow: 0 4px 0 #870000; }
         .order-off { background: linear-gradient(#9e9e9e, #616161); box-shadow: 0 4px 0 #424242; }
+        .btn-reset-list { width: auto; padding: 6px 12px; font-size: 0.75rem; background: linear-gradient(#78909c, #455a64); margin-top: 8px; }
+        .order-def { font-size: 0.75rem; color: #555; margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 12px; line-height: 1.5; }
 
         #dishPickerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
         #dishPickerContent { background: white; width: 100%; max-width: 500px; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 85%; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .picker-title { font-weight: bold; color: #ff69b4; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
         .picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .picker-btn { background: #fff; border: 2px solid #ffe0ea; padding: 12px; border-radius: 15px; text-align: center; color: #5d4037; font-weight: bold; cursor: pointer; transition: background 0.2s; word-break: break-all; }
+        .picker-btn:active { background: #ffe0ea; }
         .picker-btn.selected { background: #ff9ecd; color: white; border-color: #ff9ecd; }
-
-        /* ルビ表示用スタイル */
-        ruby { font-size: 1.1em; line-height: 1.8; }
-        rt { font-size: 0.55em; color: #f06292; letter-spacing: 0; }
+        .picker-btn.none { grid-column: span 2; background: #f5f5f5; color: #888; border-color: #ddd; }
+        
+        .fix-toggle-panel { background: #fff0f5; padding: 12px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border: 2px solid #ffc1e3; cursor: pointer; }
+        .fix-status-label { font-weight: bold; color: #f06292; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="header-img-container"><img src="cookingtitle.png" alt="Kodomo Cube" class="header-img"></div>
-    <div style="text-align:center; padding: 0 16px;">
-        <button class="btn-furigana" id="furiganaToggle" onclick="toggleFurigana()">ふりがなモード: OFF</button>
-    </div>
-    <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;" data-text="🎀 献立＆買い物リストメーカー">🎀 献立＆買い物リストメーカー</h1>
+    <h1 style="text-align:center; color:#ff69b4; font-size:1.4rem; margin:10px 0; text-shadow: 2px 2px 0 #fff;">🎀 献立＆買い物リストメーカー</h1>
 
     <div class="card">
-        <details><summary><h2 style="display:inline" data-text="データの管理">データの管理</h2></summary>
+        <details><summary><h2 style="display:inline">データの管理</h2></summary>
             <div class="details-content">
                 <select id="profileSelect"></select>
                 <div class="btn-row">
-                    <button class="btn-load" onclick="loadProfile()" data-text="読み込む">読み込む</button>
-                    <button class="btn-delete" onclick="deleteProfile()" data-text="削除">削除</button>
+                    <button class="btn-load" onclick="loadProfile()">読み込む</button>
+                    <button class="btn-delete" onclick="deleteProfile()">削除</button>
                 </div>
                 <hr style="border:0; border-top:2px dashed #ffe0ea; margin:12px 0;">
                 <input type="text" id="profileName" placeholder="新規保存名">
-                <button class="btn-save" onclick="saveProfile()" data-text="保存">保存</button>
+                <button class="btn-save" onclick="saveProfile()">保存</button>
                 <div class="btn-row">
-                    <button class="btn-csv" onclick="exportCSV()" data-text="CSV出力">CSV出力</button>
-                    <button class="btn-csv" onclick="document.getElementById('csvInput').click()" data-text="CSV入力">CSV入力</button>
+                    <button class="btn-csv" onclick="exportCSV()">CSV出力</button>
+                    <button class="btn-csv" onclick="document.getElementById('csvInput').click()">CSV入力</button>
                     <input type="file" id="csvInput" style="display:none" accept=".csv" onchange="importCSV(this)">
                 </div>
             </div>
@@ -146,73 +159,97 @@
     </div>
 
     <div class="card">
-        <details><summary><h2 style="display:inline" data-text="料理の登録">料理の登録</h2></summary>
+        <details><summary><h2 style="display:inline">料理の登録</h2></summary>
             <div class="details-content">
                 <div class="btn-row"><input type="text" id="addName" placeholder="料理名"><input type="text" id="addIng" placeholder="材料"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-                    <button class="btn-main" onclick="addDish('main')" data-text="主菜追加">主菜追加</button>
-                    <button class="btn-side" onclick="addDish('side')" data-text="副菜追加">副菜追加</button>
-                    <button class="btn-salad" onclick="addDish('salad')" data-text="サラダ追加">サラダ追加</button>
-                    <button class="btn-soup" onclick="addDish('soup')" data-text="スープ追加">スープ追加</button>
+                    <button class="btn-main" onclick="addDish('main')">主菜追加</button>
+                    <button class="btn-side" onclick="addDish('side')">副菜追加</button>
+                    <button class="btn-salad" onclick="addDish('salad')">サラダ追加</button>
+                    <button class="btn-soup" onclick="addDish('soup')">スープ追加</button>
                 </div>
+                <label>主菜</label><div id="mainListDisplay" class="scroll-list"></div>
+                <label>副菜</label><div id="sideListDisplay" class="scroll-list"></div>
+                <label>サラダ</label><div id="saladListDisplay" class="scroll-list"></div>
+                <label>スープ</label><div id="soupListDisplay" class="scroll-list"></div>
             </div>
         </details>
     </div>
 
     <div class="card">
-        <h2 data-text="作成条件">作成条件</h2>
-        <label data-text="🏠 在庫がある食材">🏠 在庫がある食材</label>
+        <h2>作成条件</h2>
+        <label>🏠 在庫がある食材</label>
         <div class="picker-trigger" onclick="openMultiPicker('inventory')">
-            <div><span data-text="選択する">選択する</span><span id="inventoryLabel" class="selected-tags"></span></div>
+            <div>選択する<span id="inventoryLabel" class="selected-tags"></span></div>
         </div>
 
         <div style="background: #fff0f5; border: 2px solid #ffe0ea; border-radius: 20px; padding: 12px; margin: 10px 0;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span data-text="在庫食材を優先活用">在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
+                <span>在庫食材を優先活用</span><input type="checkbox" id="priorityMode" checked>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span data-text="副菜: 作り置き日数">副菜: 作り置き日数</span>
+                <span>副菜: 作り置き日数</span>
                 <select id="sideBatchDays" style="width: auto; margin-bottom: 0;">
-                    <option value="1">1日</option>
+                    <option value="1">1日 (毎日変える)</option>
+                    <option value="2">2日</option>
                     <option value="3" selected>3日</option>
-                    <option value="7">7日</option>
+                    <option value="4">4日</option>
+                    <option value="5">5日</option>
+                    <option value="6">6日</option>
+                    <option value="7">7日 (1週間同じ)</option>
                 </select>
             </div>
         </div>
-        <label data-text="⭕️ 食べたい料理">⭕️ 食べたい料理</label>
+        <label>⭕️ 食べたい料理</label>
         <div class="picker-trigger" onclick="openMultiPicker('want')">
-            <div><span data-text="選択する">選択する</span><span id="wantLabel" class="selected-tags"></span></div>
+            <div>選択する<span id="wantLabel" class="selected-tags"></span></div>
         </div>
-        <label data-text="❌ 食べたくない料理">❌ 食べたくない料理</label>
+
+        <label>❌ 食べたくない料理</label>
         <div class="picker-trigger" onclick="openMultiPicker('exclude')">
-            <div><span data-text="選択する">選択する</span><span id="excludeLabel" class="selected-tags"></span></div>
+            <div>選択する<span id="excludeLabel" class="selected-tags"></span></div>
         </div>
-        <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()" data-text="固定していない献立を自動作成">固定していない献立を自動作成</button>
+
+        <button class="btn-main" style="height:70px; font-size:1.1rem;" onclick="generatePlan()">固定していない献立を自動作成</button>
     </div>
 
     <div class="card glossy-card compact-mode" id="planCard">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h2 style="margin:0;" data-text="📅 今週の献立">📅 今週の献立</h2>
-            <button class="toggle-compact-btn" onclick="toggleCompact()" data-text="詳細表示にする">詳細表示にする</button>
+            <h2 style="margin:0;">📅 今週の献立</h2>
+            <button class="toggle-compact-btn" onclick="toggleCompact()">詳細表示にする</button>
+        </div>
+        <div class="btn-row" style="margin-bottom:12px;">
+            <button class="batch-action-btn btn-salad-action" id="batchSaladBtn" onclick="toggleBatchClear('salad')">一括でサラダをなしにする</button>
+            <button class="batch-action-btn btn-soup-action" id="batchSoupBtn" onclick="toggleBatchClear('soup')">一括でスープをなしにする</button>
         </div>
         <table><tbody id="planBody"></tbody></table>
         <div class="btn-row">
-            <button class="btn-load" onclick="clearUnfixed()" data-text="固定以外クリア">固定以外クリア</button>
-            <button class="btn-save" onclick="copyText('planBody')" data-text="テキストコピー">テキストコピー</button>
+            <button class="btn-load" onclick="clearUnfixed()">固定以外クリア</button>
+            <button class="btn-save" onclick="copyText('planBody')">テキストコピー</button>
         </div>
         <div class="btn-row">
-            <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')" data-text="画像保存">画像保存</button>
-            <button class="btn-line" onclick="shareAsImage('planCard', '今週の献立')" data-text="画像をLINE等で送る">画像をLINE等で送る</button>
+            <button class="btn-image" onclick="saveAsImage('planCard', '今週の献立')">画像保存</button>
+            <button class="btn-line" onclick="shareAsImage('planCard', '今週の献立')">画像をLINE等で送る</button>
         </div>
     </div>
 
     <div class="card glossy-card" id="shoppingListCard">
-        <h2 data-text="🛒 買い物リスト">🛒 買い物リスト</h2>
-        <ul id="shoppingListBody"></ul>
-        <div class="btn-row">
-            <button class="btn-save" onclick="copyText('shoppingListBody')" data-text="テキストコピー">テキストコピー</button>
-            <button class="btn-line" onclick="sendToLine()" data-text="LINEで送る">LINEで送る</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h2 style="margin:0;">🛒 買い物リスト</h2>
+            <button class="order-toggle-btn order-on" id="orderToggle" onclick="toggleOrder()">陳列順: ON</button>
         </div>
+        <p style="font-size: 0.75rem; color: #ff69b4; margin: 0 0 8px 4px; font-weight: bold;">※タップで購入済み(打ち消し線)にできます</p>
+        <button class="btn-reset-list" onclick="resetShoppingCheck()">購入済みリセット</button>
+        <ul id="shoppingListBody"></ul>
+        <div class="order-def" id="orderDef">
+            <b>【陳列順の定義】</b><br>
+            野菜・果物 ➔ 肉 ➔ 魚 ➔ 乳製品・豆腐・納豆 ➔ 冷凍・加工食品 ➔ 調味料・その他
+        </div>
+        <div class="btn-row">
+            <button class="btn-save" onclick="copyText('shoppingListBody')">テキストコピー</button>
+            <button class="btn-line" onclick="sendToLine()">LINEで送る</button>
+        </div>
+        <button class="btn-image" onclick="saveAsImage('shoppingListCard', '買い物リスト')">画像保存</button>
     </div>
 
     <div id="dishPickerOverlay" onclick="closeDishPicker()">
@@ -220,93 +257,198 @@
             <div class="picker-title" id="pickerTitle"></div>
             <div id="pickerFixArea"></div>
             <div class="picker-grid" id="pickerGrid"></div>
-            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()" data-text="閉じる">閉じる</button>
+            <button class="btn-delete" style="margin-top:20px;" onclick="closeDishPicker()">閉じる</button>
         </div>
     </div>
 
     <script>
         const STORAGE_KEY_DATA = 'Kondate_V50_Data';
         const STORAGE_KEY_PROFILES = 'Kondate_V50_Profiles';
+        const SAMPLE_KEY = "サンプル(定番)";
+        const GITHUB_CSV_URL = "https://raw.githubusercontent.com/kodomocube/kondate/main/sample.csv";
         const DAYS = ["月", "火", "水", "木", "金", "土", "日"];
-        
-        let isFuriganaMode = false;
+
+        let isOrderOn = true;
+        let checkedItems = new Set();
         let selectedInv = new Set();
         let selectedWant = new Set();
         let selectedExclude = new Set();
-        let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
-        let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
 
-        const FURIGANA_MAP = {
-            "献立": "こんだて", "買": "か", "物": "もの", "作": "つく", "成": "せい", "条": "じょう", "件": "けん", "在": "ざい", "庫": "こ", "食": "しょく", "材": "ざい", "選": "せん", "択": "たく", "理": "り", "管": "かん", "登": "とう", "録": "ろく", "週": "しゅう", "主": "しゅ", "菜": "さい", "副": "ふく", "汁": "しる", "固定": "こてい", "以外": "いがい", "画像": "がぞう", "保存": "ほぞん", "詳": "しょう", "細": "さい", "表": "ひょう", "示": "じ", "優先": "ゆうせん", "活用": "かつよう", "日": "にち", "数": "すう"
+        const CATEGORY_ORDER = { "野菜・果物": 0, "肉": 1, "魚": 2, "乳製品・豆腐・納豆": 3, "冷凍・加工食品": 4, "調味料・その他": 5 };
+        const KEYWORDS = {
+            "野菜・果物": ["キャベツ", "レタス", "トマト", "玉ねぎ", "人参", "ピーマン", "茄子", "きゅうり", "じゃがいも", "白菜", "ねぎ", "きのこ", "ほうれん草", "小松菜", "ブロッコリー", "大根", "りんご", "バナナ"],
+            "肉": ["豚肉", "鶏肉", "牛肉", "挽肉", "もも肉", "むね肉", "バラ", "ロース", "ハム", "ソーセージ", "ベーコン"],
+            "魚": ["魚", "鮭", "鯖", "鱈", "刺身", "海老", "貝", "イカ", "タコ", "ツナ"],
+            "乳製品・豆腐・納豆": ["卵", "牛乳", "チーズ", "バター", "豆腐", "納豆", "厚揚げ", "油揚げ", "ヨーグルト"],
+            "冷凍・加工食品": ["冷凍", "うどん", "パスタ", "パン", "餃子"],
+            "調味料・その他": ["醤油", "味噌", "砂糖", "塩", "油", "酢", "ケチャップ", "マヨネーズ", "だし", "つゆ", "カレー"]
         };
 
-        function toggleFurigana() {
-            isFuriganaMode = !isFuriganaMode;
-            document.getElementById('furiganaToggle').innerText = `ふりがなモード: ${isFuriganaMode ? 'ON' : 'OFF'}`;
-            applyFuriganaAll();
-            renderTable(); // 動的要素の再描画
+        function getCategory(ing) {
+            for (const [cat, keys] of Object.entries(KEYWORDS)) { if (keys.some(k => ing.includes(k))) return cat; }
+            return "調味料・その他";
         }
 
-        function applyFuriganaAll() {
-            const elements = document.querySelectorAll('[data-text]');
-            elements.forEach(el => {
-                const originalText = el.getAttribute('data-text');
-                el.innerHTML = isFuriganaMode ? convertToRuby(originalText) : originalText;
-            });
-        }
-
-        function convertToRuby(text) {
-            let result = text;
-            Object.keys(FURIGANA_MAP).forEach(kanji => {
-                const regex = new RegExp(kanji, 'g');
-                result = result.replace(regex, `<ruby>${kanji}<rt>${FURIGANA_MAP[kanji]}</rt></ruby>`);
-            });
-            return result;
-        }
-
-        async function init() { updateProfileSelect(); renderTable(); updateLabels(); }
-
-        function renderTable() {
-            let html = "";
-            DAYS.forEach((day, i) => {
-                const p = data.currentPlan[i];
-                html += `<tr class="day-row day-row-${i}">
-                    <th class="day-header">${day}</th>
-                    <td class="menu-content">
-                        <div class="drop-row">${renderBadge(i, 'main', '#f06292', '主菜')}${renderBadge(i, 'side', '#ffb74d', '副菜')}</div>
-                        <div class="drop-row">${renderBadge(i, 'salad', '#aed581', 'サラダ')}${renderBadge(i, 'soup', '#9575cd', 'スープ')}</div>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('planBody').innerHTML = html;
+        function toggleOrder() {
+            isOrderOn = !isOrderOn;
+            const btn = document.getElementById('orderToggle');
+            btn.innerText = `陳列順: ${isOrderOn ? 'ON' : 'OFF'}`;
+            btn.className = `order-toggle-btn ${isOrderOn ? 'order-on' : 'order-off'}`;
+            document.getElementById('orderDef').style.display = isOrderOn ? 'block' : 'none';
             updateShoppingList();
         }
 
-        function renderBadge(dayIdx, type, color, label) {
-            const name = data.currentPlan[dayIdx][type];
-            const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
-            const displayText = name ? (isFuriganaMode ? convertToRuby(name) : name) : (isFuriganaMode ? convertToRuby(label + "なし") : label + "なし");
-            return `<span class="drop-badge" style="background-color:${name ? color : '#eee'}; color:${name ? 'white' : '#999'};" onclick="openDishPicker(${dayIdx},'${type}')">
-                <div class="dish-name">${isFixed ? '🔒' : ''}${displayText}</div>
-            </span>`;
+        function resetShoppingCheck() {
+            if (confirm("購入済み(打ち消し線)のチェックをすべてリセットしますか？")) {
+                checkedItems.clear();
+                updateShoppingList();
+            }
         }
 
+        function toggleItemCheck(ing) {
+            if (checkedItems.has(ing)) checkedItems.delete(ing);
+            else checkedItems.add(ing);
+            updateShoppingList();
+        }
+
+        let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILES)) || {};
+        let data = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA)) || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
+
+        async function init() {
+            await syncSampleFromGitHubCSV();
+            updateProfileSelect();
+            renderAll();
+            renderTable();
+            updateBatchBtnLabels();
+        }
+
+        async function syncSampleFromGitHubCSV() {
+            try {
+                const response = await fetch(GITHUB_CSV_URL);
+                if (!response.ok) throw new Error("GitHub fetch failed");
+                const csvText = await response.text();
+                const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
+                const mains = [], sides = [], salads = [], soups = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const [type, name, ingString] = lines[i].split(',');
+                    if (!type || !name) continue;
+                    const dish = { name: name.trim(), ing: ingString ? ingString.split('/').map(s => s.trim()) : [] };
+                    const t = type.trim().toLowerCase();
+                    if (t === 'main') mains.push(dish);
+                    else if (t === 'side') sides.push(dish);
+                    else if (t === 'salad') salads.push(dish);
+                    else if (t === 'soup') soups.push(dish);
+                }
+                const githubProfile = { mains, sides, salads, soups, currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) };
+                profiles[SAMPLE_KEY] = githubProfile;
+                localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles));
+                if (data.mains.length === 0) { data = JSON.parse(JSON.stringify(githubProfile)); saveToLocal(); }
+            } catch (e) { console.warn("GitHub CSV sync failed.", e); }
+        }
+
+        function toggleCompact() {
+            const card = document.getElementById('planCard');
+            const isNowCompact = card.classList.toggle('compact-mode');
+            const btn = document.querySelector('.toggle-compact-btn');
+            btn.innerText = isNowCompact ? "詳細表示にする" : "コンパクト表示にする";
+            renderTable();
+        }
+
+        function toggleBatchClear(type) {
+            const allLocked = data.currentPlan.every(p => p[type + 'Fixed']);
+            if (allLocked) {
+                const inv = Array.from(selectedInv);
+                const exc = Array.from(selectedExclude);
+                const want = Array.from(selectedWant);
+                const prio = document.getElementById('priorityMode').checked;
+                let used = [];
+                data.currentPlan.forEach(p => {
+                    p[type + 'Fixed'] = false;
+                    let pool = data[type + 's'].filter(d => !exc.includes(d.name) && !used.includes(d.name));
+                    if (pool.length === 0) pool = data[type + 's'].filter(d => !exc.includes(d.name));
+                    const d = pickDish(pool, want, inv, prio);
+                    p[type] = d.name;
+                    if(d.name) used.push(d.name);
+                });
+            } else {
+                data.currentPlan.forEach(p => { p[type] = ""; p[type + 'Fixed'] = true; });
+            }
+            updateBatchBtnLabels();
+            renderTable();
+            saveToLocal();
+        }
+
+        function updateBatchBtnLabels() {
+            const sBtn = document.getElementById('batchSaladBtn');
+            const pBtn = document.getElementById('batchSoupBtn');
+            const sLocked = data.currentPlan.every(p => p.saladFixed);
+            const pLocked = data.currentPlan.every(p => p.soupFixed);
+            sBtn.innerText = sLocked ? "一括でサラダをありにする" : "一括でサラダをなしにする";
+            pBtn.innerText = pLocked ? "一括でスープをありにする" : "一括でスープをなしにする";
+        }
+
+        function renderAll() {
+            ['main', 'side', 'salad', 'soup'].forEach(t => renderFullList(t));
+            updateLabels();
+            saveToLocal();
+        }
+
+        function renderFullList(type) {
+            const list = data[type + 's'];
+            const container = document.getElementById(type + 'ListDisplay');
+            container.innerHTML = list.map((d, i) => `<div class="list-item"><div class="edit-area"><span class="dish-name-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'name',this)">${d.name}</span><span class="dish-ing-edit" contenteditable="true" onblur="updateDishData('${type}',${i},'ing',this)">${d.ing.join('、')}</span></div><span style="color:red; cursor:pointer;" onclick="deleteDish('${type}',${i})">✕</span></div>`).join('');
+        }
+
+        function updateDishData(t, i, f, el) {
+            const val = el.innerText.trim();
+            if (f === 'name') data[t + 's'][i].name = val;
+            else data[t + 's'][i].ing = val.split(/[、,]+/).map(s => s.trim());
+            renderAll(); renderTable();
+        }
+
+        function addDish(t) {
+            const n = document.getElementById('addName').value.trim();
+            const g = document.getElementById('addIng').value.split(/[、,]+/).map(s => s.trim()).filter(s => s);
+            if (n) { data[t + 's'].push({ name: n, ing: g }); renderAll(); renderTable(); }
+            document.getElementById('addName').value = ''; document.getElementById('addIng').value = '';
+        }
+
+        function deleteDish(t, i) { data[t + 's'].splice(i, 1); renderAll(); renderTable(); }
+
+        // 多選択ピッカーを開く
         function openMultiPicker(mode) {
             const overlay = document.getElementById('dishPickerOverlay');
             const grid = document.getElementById('pickerGrid');
-            let items = [], selectedSet, title;
-            if (mode === 'inventory') { items = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort(); selectedSet = selectedInv; title = "在庫がある食材"; }
-            else { items = ['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].map(d => d.name)).sort(); selectedSet = (mode === 'want') ? selectedWant : selectedExclude; title = (mode === 'want') ? "⭕️ 食べたい料理" : "❌ 食べたくない料理"; }
-            
-            document.getElementById('pickerTitle').innerText = title;
+            const title = document.getElementById('pickerTitle');
+            const fixArea = document.getElementById('pickerFixArea');
+            fixArea.innerHTML = "";
             grid.innerHTML = "";
+
+            let items = [], selectedSet, titleText;
+            if (mode === 'inventory') {
+                items = [...new Set(['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].flatMap(d => d.ing)))].sort();
+                selectedSet = selectedInv;
+                titleText = "在庫がある食材";
+            } else if (mode === 'want' || mode === 'exclude') {
+                items = ['mains', 'sides', 'salads', 'soups'].flatMap(k => data[k].map(d => d.name)).sort();
+                selectedSet = (mode === 'want') ? selectedWant : selectedExclude;
+                titleText = (mode === 'want') ? "⭕️ 食べたい料理" : "❌ 食べたくない料理";
+            }
+
+            title.innerText = titleText;
             items.forEach(item => {
                 const btn = document.createElement('div');
                 btn.className = `picker-btn ${selectedSet.has(item) ? 'selected' : ''}`;
-                btn.innerHTML = isFuriganaMode ? convertToRuby(item) : item;
-                btn.onclick = () => { if (selectedSet.has(item)) selectedSet.delete(item); else selectedSet.add(item); btn.classList.toggle('selected'); updateLabels(); };
+                btn.innerText = item;
+                btn.onclick = () => {
+                    if (selectedSet.has(item)) selectedSet.delete(item);
+                    else selectedSet.add(item);
+                    btn.classList.toggle('selected');
+                    updateLabels();
+                };
                 grid.appendChild(btn);
             });
+
             overlay.style.display = 'flex';
         }
 
@@ -316,30 +458,171 @@
             document.getElementById('excludeLabel').innerText = Array.from(selectedExclude).join('、') || "なし";
         }
 
+        function renderTable() {
+            let html = "";
+            DAYS.forEach((day, i) => {
+                const p = data.currentPlan[i];
+                html += `<tr class="day-row day-row-${i}">
+                    <th class="day-header">${day}</th>
+                    <td class="menu-content">
+                        <div class="drop-row">
+                            ${renderBadge(i, 'main', '#f06292', '主菜')}
+                            ${renderBadge(i, 'side', '#ffb74d', '副菜')}
+                        </div>
+                        <div class="drop-row">
+                            ${renderBadge(i, 'salad', '#aed581', 'サラダ')}
+                            ${renderBadge(i, 'soup', '#9575cd', 'スープ')}
+                        </div>
+                        ${renderRow(i, 'main', '主', 'label-main')}
+                        ${renderRow(i, 'side', '副', 'label-side')}
+                        ${renderRow(i, 'salad', 'サ', 'label-salad')}
+                        ${renderRow(i, 'soup', '汁', 'label-soup')}
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('planBody').innerHTML = html;
+            updateShoppingList();
+        }
+
+        function renderBadge(dayIdx, type, color, label) {
+            const p = data.currentPlan[dayIdx];
+            const name = p[type];
+            const isFixed = p[type + 'Fixed'];
+            const dish = data[type + 's'].find(d => d.name === name);
+            const ingsText = dish ? dish.ing.join(',') : "";
+
+            if (!name) return `<span class="drop-badge" style="background-color:#eee; color:#999;" onclick="openDishPicker(${dayIdx},'${type}')">${isFixed?'🔒':''}${label}なし</span>`;
+            
+            return `<span class="drop-badge" style="background-color:${color}" onclick="openDishPicker(${dayIdx},'${type}')">
+                <div class="dish-name">${isFixed?'🔒':''}${name}</div>
+                <div class="dish-ings">${ingsText}</div>
+            </span>`;
+        }
+
+        function renderRow(dayIdx, type, label, labelClass) {
+            const p = data.currentPlan[dayIdx];
+            const currentName = p[type];
+            const isFixed = p[type + 'Fixed'];
+            const dish = data[type + 's'].find(d => d.name === currentName) || {name:"", ing:[]};
+            return `<div class="dish-section">
+                <div class="dish-header-row">
+                    <span class="dish-type-label ${labelClass}">${label}</span>
+                    <span class="fix-btn ${isFixed?'fixed':''}" onclick="toggleFix(${dayIdx},'${type}')">${isFixed?'固定ON':'固定OFF'}</span>
+                    <select class="menu-select" onchange="updateChoice(${dayIdx},'${type}',this.value)">
+                        <option value="">なし</option>
+                        ${data[type + 's'].map(d => `<option value="${d.name}" ${d.name===currentName?'selected':''}>${d.name}</option>`).join('')}
+                    </select>
+                </div>
+                ${currentName ? `<div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;" class="recipe-links">
+                    <a href="https://recipe.rakuten.co.jp/search/${encodeURIComponent(currentName)}/" target="_blank" class="search-link">楽天レシピ</a>
+                    <a href="https://cookpad.com/search/${encodeURIComponent(currentName)}" target="_blank" class="search-link">クックパッド</a>
+                </div>` : ''}
+                <small class="ing-text" style="display:block; margin-top:4px; font-size:0.65rem; color:#9e9e9e;">${dish.ing.join('、')}</small>
+            </div>`;
+        }
+
+        function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; updateBatchBtnLabels(); renderTable(); saveToLocal(); }
+        function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
+
         function openDishPicker(dayIdx, type) {
             const overlay = document.getElementById('dishPickerOverlay');
             const grid = document.getElementById('pickerGrid');
+            const title = document.getElementById('pickerTitle');
+            const fixArea = document.getElementById('pickerFixArea');
+            const typeJP = type === 'main' ? '主菜' : type === 'side' ? '副菜' : type === 'salad' ? 'サラダ' : 'スープ';
             const isFixed = data.currentPlan[dayIdx][type + 'Fixed'];
-            document.getElementById('pickerTitle').innerText = DAYS[dayIdx] + "曜日の料理";
-            document.getElementById('pickerFixArea').innerHTML = `<div class="fix-toggle-panel" style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; background:#fff0f5; padding:10px; border-radius:15px; border:2px solid #ffc1e3;" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')"><span>${isFixed ? '🔒 固定中' : '🔓 未固定'}</span><button class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除':'固定'}</button></div>`;
-            grid.innerHTML = `<div class="picker-btn" style="grid-column:span 2; background:#f5f5f5;" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
-            data[type + 's'].forEach(dish => {
-                const btn = document.createElement('div');
-                btn.className = "picker-btn";
-                btn.innerHTML = isFuriganaMode ? convertToRuby(dish.name) : dish.name;
-                btn.onclick = () => { updateChoice(dayIdx, type, dish.name); closeDishPicker(); };
-                grid.appendChild(btn);
-            });
+            
+            title.innerText = `${DAYS[dayIdx]}曜日の${typeJP}を選択`;
+            fixArea.innerHTML = `<div class="fix-toggle-panel" onclick="toggleFix(${dayIdx},'${type}'); openDishPicker(${dayIdx},'${type}')"><span class="fix-status-label">${isFixed ? '🔒 固定中' : '🔓 未固定'}</span><span class="fix-btn ${isFixed?'fixed':''}" style="margin:0">${isFixed?'解除':'固定'}</span></div>`;
+            grid.innerHTML = `<div class="picker-btn none" onclick="updateChoice(${dayIdx},'${type}',''); closeDishPicker();">なし</div>`;
+            data[type + 's'].forEach(dish => { grid.innerHTML += `<div class="picker-btn" onclick="updateChoice(${dayIdx},'${type}','${dish.name}'); closeDishPicker();">${dish.name}</div>`; });
             overlay.style.display = 'flex';
         }
-
-        function updateChoice(i, type, val) { data.currentPlan[i][type] = val; renderTable(); saveToLocal(); }
-        function toggleFix(i, type) { data.currentPlan[i][type + 'Fixed'] = !data.currentPlan[i][type + 'Fixed']; renderTable(); saveToLocal(); }
         function closeDishPicker() { document.getElementById('dishPickerOverlay').style.display = 'none'; }
-        function toggleCompact() { document.getElementById('planCard').classList.toggle('compact-mode'); renderTable(); }
-        function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
-        function updateProfileSelect() { /* プロフィール更新処理 */ }
 
+        function generatePlan() {
+            const inv = Array.from(selectedInv);
+            const exc = Array.from(selectedExclude);
+            const want = Array.from(selectedWant);
+            const prio = document.getElementById('priorityMode').checked;
+            const sideBatchDays = parseInt(document.getElementById('sideBatchDays').value);
+            let usedM = data.currentPlan.filter(p => p.mainFixed).map(p => p.main);
+            DAYS.forEach((_, i) => { if(!data.currentPlan[i].mainFixed) { let pool = data.mains.filter(d => !exc.includes(d.name) && !usedM.includes(d.name)); if(pool.length === 0) pool = data.mains.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i].main = d.name; if(d.name) usedM.push(d.name); } });
+            let currentSide = "", remainingBatch = 0, usedS = data.currentPlan.filter(p => p.sideFixed).map(p => p.side);
+            DAYS.forEach((_, i) => { if (data.currentPlan[i].sideFixed) { remainingBatch = 0; return; } if (remainingBatch <= 0) { let pool = data.sides.filter(d => !exc.includes(d.name) && !usedS.includes(d.name)); if (pool.length === 0) pool = data.sides.filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); currentSide = d.name; remainingBatch = sideBatchDays; if(d.name) usedS.push(d.name); } data.currentPlan[i].side = currentSide; remainingBatch--; });
+            ['salad', 'soup'].forEach(type => { let used = data.currentPlan.filter(p => p[type+'Fixed']).map(p => p[type]); DAYS.forEach((_, i) => { if(!data.currentPlan[i][type+'Fixed']) { let pool = data[type+'s'].filter(d => !exc.includes(d.name) && !used.includes(d.name)); if(pool.length === 0) pool = data[type+'s'].filter(d => !exc.includes(d.name)); const d = pickDish(pool, want, inv, prio); data.currentPlan[i][type] = d.name; if(d.name) used.push(d.name); } }); });
+            renderTable(); saveToLocal();
+        }
+
+        function pickDish(pool, want, inv, prio) { if (!pool || pool.length === 0) return {name:"", ing:[]}; let shuffled = shuffle([...pool]); let f = shuffled.filter(d => want.includes(d.name)); if (!f.length && prio) f = shuffled.filter(d => d.ing.some(i => inv.includes(i))); return (f.length ? f : shuffled)[0]; }
+        function shuffle(a) { for(let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+        function updateShoppingList() {
+            const inv = Array.from(selectedInv);
+            let ings = new Set();
+            data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { const d = data[t+'s'].find(x => x.name === p[t]); if(d) d.ing.forEach(ing => ings.add(ing)); }); });
+            let listArr = Array.from(ings);
+            if (isOrderOn) {
+                listArr.sort((a, b) => { const catA = getCategory(a), catB = getCategory(b); if (CATEGORY_ORDER[catA] !== CATEGORY_ORDER[catB]) return CATEGORY_ORDER[catA] - CATEGORY_ORDER[catB]; return a.localeCompare(b, 'ja'); });
+            } else { listArr.sort((a, b) => a.localeCompare(b, 'ja')); }
+            let currentCat = "", html = "";
+            listArr.forEach(ing => {
+                const cat = getCategory(ing), isChecked = checkedItems.has(ing);
+                if (isOrderOn && cat !== currentCat) { html += `<li style="background:#fefefe; font-size:0.7rem; color:#888; padding:4px 12px; border-radius:0; box-shadow:none; border-bottom:1px solid #eee; cursor:default;" onclick="event.stopPropagation()">【${cat}】</li>`; currentCat = cat; }
+                html += `<li class="${isChecked?'checked':''}" onclick="toggleItemCheck('${ing}')"><span>${ing}</span><div>${inv.includes(ing)?'<span class="batch-tag" style="background:#e1f5fe; color:#0288d1; padding:2px 6px; border-radius:10px; font-size:9px;">在庫あり</span>':''}<a href="https://sm.rakuten.co.jp/search?keyword=${encodeURIComponent(ing)}" target="_blank" class="search-link" style="margin-left:8px; font-size: 0.55rem;" onclick="event.stopPropagation()">楽天マートで見る</a></div></li>`;
+            });
+            document.getElementById('shoppingListBody').innerHTML = html;
+        }
+
+        function updateProfileSelect() {
+            const select = document.getElementById('profileSelect');
+            let options = `<option value="${SAMPLE_KEY}">${SAMPLE_KEY}</option>`;
+            Object.keys(profiles).forEach(name => { if (name !== SAMPLE_KEY) options += `<option value="${name}">${name}</option>`; });
+            select.innerHTML = options;
+        }
+
+        function saveProfile() { const n = document.getElementById('profileName').value.trim(); if (n && n !== SAMPLE_KEY) { profiles[n] = JSON.parse(JSON.stringify(data)); localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); alert("保存しました"); } }
+        function loadProfile() { const n = document.getElementById('profileSelect').value; data = JSON.parse(JSON.stringify(profiles[n] || { mains:[], sides:[], salads:[], soups:[], currentPlan: Array.from({length: 7}, () => ({ main: "", side: "", salad: "", soup: "", mainFixed: false, sideFixed: false, saladFixed: false, soupFixed: false })) })); renderAll(); renderTable(); updateBatchBtnLabels(); }
+        function deleteProfile() { const n = document.getElementById('profileSelect').value; if (n === SAMPLE_KEY) return alert("サンプルは削除不可"); if (confirm(n + " 削除しますか？")) { delete profiles[n]; localStorage.setItem(STORAGE_KEY_PROFILES, JSON.stringify(profiles)); updateProfileSelect(); } }
+        function exportCSV() { let csv = "Type,Name,Ingredients\n"; ['main', 'side', 'salad', 'soup'].forEach(t => data[t+'s'].forEach(d => csv += `${t},"${d.name}","${d.ing.join('/')}"\n`)); const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "my_dishes.csv"; link.click(); }
+        function importCSV(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { const lines = e.target.result.split(/\r?\n/); const newData = { mains:[], sides:[], salads:[], soups:[] }; for (let i = 1; i < lines.length; i++) { const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); if (row.length < 3) continue; const t = row[0].trim().toLowerCase() + 's'; const name = row[1].replace(/"/g, '').trim(); const ing = row[2].replace(/"/g, '').split('/').map(s => s.trim()).filter(s => s); if (newData[t]) newData[t].push({ name, ing }); } if (confirm(`読み込みますか？`)) { Object.assign(data, newData); renderAll(); renderTable(); } input.value = ""; }; reader.readAsText(file); }
+        function clearUnfixed() { data.currentPlan.forEach(p => { ['main', 'side', 'salad', 'soup'].forEach(t => { if(!p[t+'Fixed']) p[t] = ""; }); }); renderTable(); saveToLocal(); }
+
+        async function saveAsImage(id, name) {
+            const card = document.getElementById(id);
+            const links = card.querySelectorAll('.search-link'), btns = card.querySelectorAll('button');
+            links.forEach(l => l.style.display = 'none'); btns.forEach(b => b.style.display = 'none');
+            const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true });
+            links.forEach(l => l.style.display = 'inline-block'); btns.forEach(b => b.style.display = 'block');
+            const link = document.createElement('a'); link.href = canvas.toDataURL("image/png"); link.download = `${name}.png`; link.click();
+        }
+
+        async function shareAsImage(id, name) {
+            const card = document.getElementById(id);
+            const links = card.querySelectorAll('.search-link'), btns = card.querySelectorAll('button');
+            links.forEach(l => l.style.display = 'none'); btns.forEach(b => b.style.display = 'none');
+            try {
+                const canvas = await html2canvas(card, { scale: 2, backgroundColor: "#fff5f8", useCORS: true });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = new File([blob], `${name}.png`, { type: 'image/png' });
+                if (navigator.share && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); }
+            } catch (err) { console.error(err); } finally { links.forEach(l => l.style.display = 'inline-block'); btns.forEach(b => b.style.display = 'block'); }
+        }
+
+        function getShoppingText() {
+            const lis = document.getElementById('shoppingListBody').querySelectorAll('li');
+            return Array.from(lis).filter(li => !li.classList.contains('checked') && !li.innerText.startsWith('【')).map(li => li.innerText.replace('楽天マートで見る', '').trim()).join('\n');
+        }
+
+        function copyText(id) {
+            let txt = "";
+            if (id === 'planBody') txt = data.currentPlan.map((p,i) => `${DAYS[i]}: ${p.main||'-'} / ${p.side||'-'} / ${p.salad||'-'} / ${p.soup||'-'}`).join('\n');
+            else if (id === 'shoppingListBody') txt = getShoppingText();
+            navigator.clipboard.writeText(txt).then(() => alert("コピーしました"));
+        }
+
+        function sendToLine() { const txt = "【買い物リスト】\n" + getShoppingText(); window.open("https://line.me/R/msg/text/?" + encodeURIComponent(txt), '_blank'); }
+        function saveToLocal() { localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data)); }
         init();
     </script>
 </body>
